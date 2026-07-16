@@ -1,0 +1,17 @@
+{
+  "name": "nabd-kut-build-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Branded KUT document build pipeline for Nabd (Word + Slides). Turns real screenshots into per-module KUT deliverables.",
+  "type": "commonjs",
+  "scripts": {
+    "example": "node build_example.js"
+  },
+  "dependencies": {
+    "docx": "8.5.0",
+    "pptxgenjs": "4.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

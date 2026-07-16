@@ -1,0 +1,13 @@
+# Working outputs (created by the team while using the kit — not part of the kit itself)
+briefs/
+findings/
+Screenshots/
+KUT_COVERAGE_AUDIT.md
+PRODUCT_ANOMALIES_REGISTER.md
+
+# Node
+node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+node_modules/
+package-lock.json
+
+# Per-module screenshots + built outputs are project data, not shipped with the kit.
+# (assets/ IS tracked — the brand images the builders embed.)
+screenshots/
+*.docx
+*.pptx
