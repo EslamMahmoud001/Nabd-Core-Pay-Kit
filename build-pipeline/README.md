@@ -33,6 +33,11 @@ node build_<id>_docx.js       # → screenshots/<id>_real/<CODE>_<Title>_KUT.doc
 node build_<id>_slides.js     # → screenshots/<id>_real/<CODE>_<Title>_KUT.pptx
 ```
 
+> ⚠️ **The pre-shipped `build_<id>_*.js` are reference examples, not runnable as-is.** Each is a *worked model*
+> from a real module, hard-wired to its own `meta`, step list, and `screenshots/<id>_real/` folder — which is
+> **not** included in the kit. Running one without its screenshots will fail. Treat them as read-and-copy
+> templates. Your only clean starting points are `build_template.js` / `build_example.js` and the closest model.
+
 To author a NEW module, copy the closest pair:
 - **Plain KUT** → `build_fdrun01_docx.js` + `build_fdrun01_slides.js`.
 - **KUT with a Configuration section** → `build_bp09_*` or `build_cfg_*`.

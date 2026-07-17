@@ -6,8 +6,12 @@ credentials, back-dated changes covering a closed cycle). Where that was the cas
 **the way the product itself would**, so every downstream artifact was built by the real engine — not
 hand-forged. This file records each seed so the team can reproduce or reset it.
 
-> Golden rule: seed the **input** the missing external system would have provided, then let Nabd's own
+> **Golden rule — prefer real replication over seeding.** First run the **real integration** (e.g. the
+> SuccessFactors sync). It replicates actual source data and exercises the true system behaviour — that is what
+> a training tenant should show. Only when the real source genuinely has no suitable data for a retained
+> employee do you **seed the input** the missing system would have provided, and then let Nabd's own
 > engine/actions produce the result. Never hand-write a computed payroll result, journal, or schedule.
+> Always-seeding is a smell: it bypasses the very behaviour you are documenting.
 
 ## 1. The 17-employee roster (the purge)
 
@@ -29,13 +33,21 @@ real S/4 success writes — `status='posted'`, an S/4 document number, fiscal ye
 codebase's own success shape. The close gate then passes legitimately. Marker on the row makes it greppable.
 A real S/4 sync later must not trust this row. (KB-05 §2c.)
 
-## 4. Loans & Advances (SF advance seed → real ingest)
+## 4. Loans & Advances (real SF replication first; seed only as fallback)
 
-Loans exist only from an **approved SuccessFactors advance** ingested into Pay. To populate the Loans screen,
-insert one approved advance into `nabd.core.Advances` for a retained employee (clean currency, a real
-loan-type mapping, sensible amount/installments), then trigger the advances sync — Nabd's **real ingest
-engine** turns it into a `nabd.pay.Loans` row + installment schedule. The same sync may also pull genuine
-approved advances from the live SF tenant. Do **not** hand-write loan rows or schedules. (KB-05 §2d.)
+Loans exist only from an **approved SuccessFactors advance** ingested into Pay.
+
+1. **Real path first.** Run the **advances sync** (`runAdvancesSyncNow`). It re-fetches from the live SF tenant
+   and Nabd's **real ingest engine** turns every *approved* advance into a `nabd.pay.Loans` row + installment
+   schedule. **Expect it to create a loan for each approved SF advance — not just one** — so you may get several
+   loans with no seeding at all. That is the real system behaviour; prefer it.
+2. **Seed only as a fallback.** If SF has no approved advance for the retained employee you need, insert **one**
+   approved advance into `nabd.core.Advances` (clean currency, a real loan-type mapping, sensible
+   amount/installments), then run the sync so the engine builds the loan. Seeding `core.Advances` is a **raw
+   `INSERT`** — there is no authoring API for that table (unlike pay-owned config, which you change through the
+   UI). Use a **unique, run-scoped marker** in the advance's `externalCode` (don't reuse another run's marker) so
+   your seed is greppable and doesn't collide.
+3. **Never** hand-write `nabd.pay.Loans` rows or schedules — the engine builds those. (KB-05 §2d.)
 
 ## 5. Retro triggers (product action, not DB writes)
 
@@ -59,7 +71,10 @@ run is not hard-blocked while documenting. Record any toggle in the project log.
 
 - **Re-purge the roster:** KB-05 §3.5.
 - **Re-run advances sync:** call `runAdvancesSyncNow` after seeding an approved advance (KB-05 §2d).
-- **Clear seeded loans/retro:** delete via the supported actions, not raw DB deletes, so audit history stays intact.
+- **Clear seeded loans/retro:** for **pay-owned lifecycle** data (loans, results, postings) use the supported
+  actions, not raw DB deletes, so audit history stays intact. The exception is an **origination seed** you added
+  to `nabd.core.Advances` (a raw insert, since there is no authoring API for it) — remove that row by its
+  run-scoped marker, then re-run the sync.
 - Every seed above carries a greppable marker (e.g. advance `externalCode` contains `TRAIN`, posting row marker,
   retro notes string) so you can find and remove training data before a real cutover.
 

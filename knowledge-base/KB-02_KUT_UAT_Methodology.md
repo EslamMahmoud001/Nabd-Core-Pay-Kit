@@ -76,9 +76,9 @@ Current location: **`build-pipeline/`** (run builders **from that folder**; path
 > ⛔ **PDF is OUT OF SCOPE.** Deliverables are **Word + Slides only**. PDF was the only reason a document
 > converter (LibreOffice) was ever needed, so **no converter is a prerequisite**. Do not generate PDFs.
 >
-> ⚠️ **Legacy PDFs already in `Material-Remediated/` are now unmaintained.** They will not be regenerated, so any doc whose content changes leaves a **stale PDF that contradicts the current Word/Slides**. Retire the PDF when you re-issue a document (FD-RUN-01's PDF is the live example — its figures are wrong).
+> ⚠️ **Any legacy PDFs in the project's material folder are unmaintained.** They will not be regenerated, so any doc whose content changes leaves a **stale PDF that contradicts the current Word/Slides**. Retire the PDF when you re-issue a document (FD-RUN-01's PDF is the live example — its figures are wrong).
 
-**Delivery:** copy both (docx + pptx) to `…/Nabd-Claude/Payroll_KUT/Nabd-User-Manual/Material-Remediated/`, then present the files.
+**Delivery:** copy both (docx + pptx) to the project's material folder (e.g. `Nabd-User-Manual/Material-Remediated/`), then present the files.
 
 **Closest models to copy:** `build_fdrun01_docx.js` / `_slides.js` (clean 10-section KUT) and `build_bp09_docx.js` / `_slides.js` (KUT *with* a Configuration section).
 
@@ -139,9 +139,9 @@ Why: in-session Chrome control (a) can't save clean PNGs to disk, (b) adds an on
 **D. Build integrity**
 - [ ] **Both formats** produced (**docx + pptx** — PDF is out of scope, see §3) and non-trivial in size (screenshots embedded → docx/pptx are MBs, not KBs).
 - [ ] **Figures in the built file match the current KB baseline** — extract the text and grep it (`zipfile` → `word/document.xml`), don't trust the builder source. Old figures may legitimately appear **only** in the revision-history row.
-- [ ] Any **stale PDF** for this doc is retired from `Material-Remediated/` (PDFs are no longer regenerated).
+- [ ] Any **stale PDF** for this doc is retired from the material folder (PDFs are no longer regenerated).
 - [ ] Branded header/footer + PERFORMED BY tags render correctly.
-- [ ] Files delivered to `Material-Remediated/` and presented.
+- [ ] Files delivered to the project's material folder and presented.
 
 **E. Consistency across the set**
 - [ ] Same template, palette, section grammar as the other delivered KUTs.
@@ -159,7 +159,7 @@ Why: in-session Chrome control (a) can't save clean PNGs to disk, (b) adds an on
 
 ## 7. Definition of Done (a KUT is "done" when)
 
-Real per-step screenshots (no dups) + all 3 formats built and QA-passed + delivered to `Material-Remediated/` + presented + **the project log status row updated**. Any environment setup used to produce it (config activated, preflight checks toggled, demo seeded) is recorded in the project log/KB-04.
+Real per-step screenshots (no dups) + all 3 formats built and QA-passed + delivered to the project's material folder + presented + **the project log status row updated**. Any environment setup used to produce it (config activated, preflight checks toggled, demo seeded) is recorded in the project log/KB-04.
 
 ---
 

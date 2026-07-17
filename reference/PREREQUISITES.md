@@ -12,7 +12,12 @@ What you need before using this kit to operate Nabd and generate KUT material.
 
 ## Tooling
 - **Node.js ≥ 18** (the backend, the front-ends, and the build pipeline all run on Node).
-- **Docker** — to run the local Postgres (`NABD_ALT`) the backend points at.
+- **Docker — conditional, not universal.** It is required **only** for the persistent **Postgres `NABD_ALT`**
+  training tenant (the one carrying the purged 17-employee roster and the configuration this kit was built on) —
+  which is what you want for reproducible payroll runs and KUT capture. If you only need to *explore* the app,
+  SAP CAP can run against an in-memory/SQLite database with the repo's seed data (no Docker) — but that path does
+  **not** have the seeded training state. **Decide the DB path first:** Postgres/NABD_ALT (needs Docker) for real
+  work, or SQLite for a quick look. KB-05 §1 covers the Postgres path.
 - **@sap/cds** (CAP) — provided by the app repo's `node_modules` after `npm install`.
 - **Playwright** + a **Chromium** build — for capturing screenshots. The app repo already depends on
   Playwright; the capture scripts resolve Chromium from there.

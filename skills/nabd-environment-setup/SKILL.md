@@ -14,8 +14,19 @@ You get the Nabd stack running locally and **healthy**, so the Consultant can co
 scripts can reach it. You do not configure payroll or build documents — you make the platform reachable and
 the data sane, then hand off.
 
+## Check the prerequisites FIRST (and ask the user when you can't self-serve)
+Before starting anything, confirm the prerequisites in `reference/PREREQUISITES.md` are in place, and **give the
+user a heads-up for anything you cannot reliably do yourself**:
+- **Docker must be running.** Run `docker info` — if it fails, **ask the user to start Docker Desktop** (a
+  headless agent usually cannot launch the Docker Desktop GUI/engine reliably) and wait for it to be ready
+  before continuing. Don't burn time trying to boot it yourself.
+- The **app repo** is cloned and its gitignored `default-env.json` is restored (SF/S4 destinations).
+- `npm install` has been run in the app repo and in the kit's `build-pipeline/`.
+- Node ≥ 18 and Playwright/Chromium are available.
+State clearly which prerequisites are satisfied and which the user must provide, then proceed once they are.
+
 ## The stack (bring up in this order)
-1. **Docker Postgres** — the `NABD_ALT` database on port **55432**.
+1. **Docker Postgres** — the `NABD_ALT` database on port **55432** (start the container once Docker is running).
 2. **Backend** (SAP CAP) on **:4004** — point CAP at `NABD_ALT` **without editing repo files** (via the
    profile/env described in KB-05 §1.2). The backend serves `/api/core` and `/api/payroll-*`.
 3. **Front-ends** — Nabd **Core** (`app-core`) on **:3002** and Nabd **Pay** (`app-pay`) on **:3003**

@@ -192,9 +192,15 @@ Different features require the cycle/data to be in different states. Getting the
 - The system is treated as potentially **live** — never assume writes are safe on a production tenant. All work this session was on a **local QA/project tenant** where writes are safe. Prefer dry runs, demo seeds, and reversible actions.
 - **Actual run / post / close are consequential** — they finalize a cycle. Do them deliberately and only when the task truly needs a finalized cycle.
 - Config changes (activating pay items, packs, toggling preflight checks) **persist** in the local DB — note them in the project log so the next session knows the environment state.
+- **Some screens are pinned to the current month.** The Loans **Compliance** tab uses the current period with no
+  period picker, so a freshly-created loan (whose first installment is *next* month) shows "Active compliance
+  checks = 0" and a "EGP 0.00" floor for the current month — the deduction-limit breaches still show on the
+  **Installment schedules** tab, which evaluates all active loans. Know this before documenting compliance so you
+  capture the breach on the screen that actually shows it.
 
 ---
 
-*Last verified: 2026-07-13 (session that produced FD-RUN-01 and BP-09). Update the date and the changed sections whenever the repo or app changes.*
-
-*Partially re-verified 2026-07-15: **§2 only** — corrected the repo-path warning (the live repo is `Payroll_KUT/Nabd_Repo/nabd/`; `Nabd-Claude/nabd/` is stale) and noted the clone-only rule. The rest of this file was **not** re-verified against the PR #325 code and still reflects the PR #114-era reading — treat §3–§11 as unconfirmed until re-checked.*
+> **How to use this file.** KB-01 is a strong starting map of Nabd, but **the running app is the source of
+> truth.** Nav labels, routes, gates, and statuses drift between releases — the kit's method is to confirm each
+> against the live app/repo before you document it (§2: route → page → handler). Verify, then write. When you
+> confirm or correct something, note it in the project log's change log.
