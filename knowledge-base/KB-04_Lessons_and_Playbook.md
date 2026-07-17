@@ -101,13 +101,46 @@ In-session Chrome control was tried and is **not** the capture path because:
 
 1. Copy the closest builder (`build_fdrun01_*` for plain, `build_bp09_*` for config-included) in `…/outputs/kut_build/`.
 2. Point `IMG()` at `…/outputs/<id>_real/` and copy the screenshots there.
-3. `node build_<id>_docx.js` → `.docx`; `node build_<id>_slides.js` → `.pptx`. (PDF is out of scope — no LibreOffice/Poppler needed.)
-4. QA (KB-02 §6): page count, spot-render a page, no dup screenshots, metadata.
-5. Copy all 3 to `Material-Remediated/`; `present_files`; update **the project log**.
+3. `node build_<id>_docx.js` → `.docx`; `node build_<id>_slides.js` → `.pptx`. (Word + Slides only — no PDF.)
+4. QA (KB-02 §6): open the .docx/.pptx, no dup screenshots, metadata, figures match the shots.
+5. Copy both to the project's material folder; present the files; update **the project log**.
 
 ---
 
-## 9. Safety & etiquette
+## 9. Playbook — end-to-end retroactive pay (back-dated raise → paid next cycle)
+
+The canonical retro scenario: an employee is paid in month 1 at the old salary; a raise is entered later,
+back-dated to month 1; month 2 pays the new base **plus the month-1 difference** as a retro line, and the month-2
+payslip shows it. This exercises the real diff engine — verified end-to-end.
+
+**Config prerequisites (all three or retro silently fails — KB-01 §11):**
+- The base earning pay item is `isRetro = true` (else the delta is computed then **dropped**).
+- The pay item's `effectiveFrom` covers **month 1** (else "no earning assigned").
+- The payslip template has body sections incl. a `retro` section (else the payslip is a blank shell).
+
+**Flow (single employee; actions on `/api/payroll-config` + `/api/payroll-cycle-approvals` + `/api/pay-payslips`):**
+1. **Month 1 at the OLD salary:** `openDaybreakCycle(cal, m1Start, m1End)` → `cutoffDaybreakCycle` →
+   `runDaybreakActual(cycleId, null, "[\"<emp>\"]")` → `submitForApproval` → `approveApproval` ×2 →
+   `closeDaybreakCycle` (override `gl_journal_posted` if no local S/4) → `generateBulkPayslips`. Verify the
+   result = old gross.
+2. **Back-date the raise:** split the base **pay component** (`nabd.core.PayComponents`) — close the old slice at
+   `m1Start-1`, insert a new slice `effectiveFrom = m1Start` at the new amount, with `payCompLastModifiedOn` set
+   to **after month 1's `cutoffAt`** (that's what marks it a *late-arriving* back-dated change). This is the SF
+   input the sync would carry — prefer a real SF change where possible (KB-05 §2 / SEEDED_DATA.md).
+3. **Raise the trigger:** run the retro-detector (`runJobNow("retro-detector")`) to auto-detect it, or create it
+   with `createRetroTriggers` (scope `list`, `effectiveFrom = m1Start`). Result: a **pending** RetroTrigger.
+4. **Month 2:** `openDaybreakCycle` → `cutoffDaybreakCycle` → `runDaybreakActual`. The run consumes the pending
+   trigger, replays month 1 with current data, and appends the delta as a **retro line** (`nabd.pay.RetroLines`,
+   `sourceCycleId = month 1`). Verify: month-2 gross = new base + delta.
+5. `submitForApproval` → `approveApproval` ×2 → `closeDaybreakCycle` → `generateBulkPayslips`. The month-2 payslip
+   shows Earnings (new base incl. retro), a **Retroactive Adjustments** line (+delta, tagged month 1), and Net.
+
+**Gotcha:** retro settles *every* prior posted period the change covers. If a later cycle (e.g. a stray closed
+August) exists, it also gets a delta — void that out-of-order result to keep a clean two-month demo (KB-01 §11).
+
+---
+
+## 10. Safety & etiquette
 
 - Treat the tenant as potentially live; all safe work was on the **local QA/project tenant**. Never enter credentials/financial data; never post/close a real cycle without the owner's explicit intent.
 - Dry runs, demo seeds, and reversible config are the default. Anything irreversible (post, close, delete, regenerate that hard-deletes) is **confirm-gated** — treat it as such.

@@ -198,6 +198,29 @@ Different features require the cycle/data to be in different states. Getting the
   **Installment schedules** tab, which evaluates all active loans. Know this before documenting compliance so you
   capture the breach on the screen that actually shows it.
 
+### Retro & payslip configuration prerequisites (learned the hard way)
+These three config facts are non-obvious and each silently produces a *wrong-but-not-erroring* result. Confirm
+them before running a retro scenario or generating payslips (see the KB-04 playbook for the full flow):
+
+- **Retro deltas only emit for pay items flagged `isRetro = true`.** The engine will faithfully replay the prior
+  cycle and compute the back-dated delta, but the diff (`retro-diff.js`) **drops** any delta whose PayItem has
+  `isRetro = false`. Result: the retro is silently swallowed — the current run shows only the new base, no
+  correction line. Set `isRetro = true` on the base earning (and any item that can carry retro) or **no retro is
+  ever paid.** This is the single most common "my retro didn't work" cause.
+- **Config effective-dates must cover the period you run.** A cycle whose start predates a pay item's
+  `effectiveFrom` fails readiness with **"no earning assigned"** (the earning isn't active yet for that period).
+  If you run a back-month (e.g. June) but the config was set up effective in July, backdate the item's
+  `effectiveFrom` to cover it. Parameters/brackets/schemes are usually effective 2026-01-01; the base earning is
+  the one that tends to lag.
+- **A payslip template with no *sections* renders an empty shell.** The PDF only shows header/period/footer until
+  you add body sections (`upsertPaySlipSection`, kinds: `earnings`/`deductions`/`retro`/`net_hero`/…) and, for
+  item tables, wage types (`upsertPaySlipSectionWageType` binding a `payItemKey`). The `retro` section
+  auto-renders the run's retro corrections; no wage type needed. Without sections, payslips "generate
+  successfully" but are blank.
+- **Retro settles *every* prior posted period the change covers**, not just the immediately-prior one. A raise
+  effective 1 June also recomputes an already-closed August cycle if one exists — correct behaviour, but it can
+  surprise a clean two-month demo.
+
 ---
 
 > **How to use this file.** KB-01 is a strong starting map of Nabd, but **the running app is the source of
