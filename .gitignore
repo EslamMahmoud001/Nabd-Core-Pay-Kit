@@ -5,6 +5,12 @@ Screenshots/
 KUT_COVERAGE_AUDIT.md
 PRODUCT_ANOMALIES_REGISTER.md
 
+# QA per-run outputs (the plan + tier-0 script ARE tracked; the run reports are not)
+qa/TEST_REPORT.md
+qa/DEFECT_LOG.md
+qa/KNOWLEDGE_GAP_LOG.md
+qa/artifacts/
+
 # Node
 node_modules/
 

@@ -73,7 +73,8 @@ Current location: **`build-pipeline/`** (run builders **from that folder**; path
 1. **Word** — `node build_<id>_docx.js` → `.docx`.
 2. **Slides** — `node build_<id>_slides.js` → `.pptx` (pptxgenjs).
 
-> ⛔ **PDF is OUT OF SCOPE.** The owner dropped PDF entirely on 2026-07-15 ("we ignore pdfs in general"). PDF was the *only* reason LibreOffice (`soffice`) was needed, so **LibreOffice is no longer a prerequisite** and was not installed. Historical command, kept only for reference if PDF is ever reinstated: `soffice --headless --convert-to pdf --outdir . <file>.docx`.
+> ⛔ **PDF is OUT OF SCOPE.** Deliverables are **Word + Slides only**. PDF was the only reason a document
+> converter (LibreOffice) was ever needed, so **no converter is a prerequisite**. Do not generate PDFs.
 >
 > ⚠️ **Legacy PDFs already in `Material-Remediated/` are now unmaintained.** They will not be regenerated, so any doc whose content changes leaves a **stale PDF that contradicts the current Word/Slides**. Retire the PDF when you re-issue a document (FD-RUN-01's PDF is the live example — its figures are wrong).
 
