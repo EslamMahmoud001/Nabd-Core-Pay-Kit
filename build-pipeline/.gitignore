@@ -6,3 +6,6 @@ package-lock.json
 screenshots/
 *.docx
 *.pptx
+
+# cold-agent test builders (not kit content)
+*_coldrun_*.js
