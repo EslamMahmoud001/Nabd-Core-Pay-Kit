@@ -1,73 +1,67 @@
-# Nabd — Feature Inventory (what the product actually includes)
+# Core + Pay feature inventory
 
-A map of the Nabd surfaces you will operate and document. Nabd is a **SuccessFactors-integrated HR + payroll
-platform** built on **SAP CAP** with two React/Vite front-ends. The payroll engine is codenamed **Daybreak**.
-Routes below are React routes; confirm exact labels in the running app before documenting them (KB-01).
+This is a navigation and verification index, not a substitute for the active clone. Labels and release state must be confirmed in the running app.
 
-## Systems & ports
+## Platform
 
-| System | Port | Role |
-|---|---|---|
-| **Nabd Core** (`app-core`) | 3002 | Employee master data, foundation, time/leave — the SF-synced source of truth |
-| **Nabd Pay** (`app-pay`) | 3003 | Payroll configuration, run lifecycle, outputs |
-| **Backend** (SAP CAP) | 4004 | OData services `/api/core`, `/api/payroll-*`, the Daybreak engine |
-| **Postgres** | 55432 | `NABD_ALT` database (the local training DB) |
+| Surface | Local default | Responsibility |
+|---|---:|---|
+| CAP backend | `4004` | Core and Pay services, integrations, engine, scheduled jobs |
+| Core UI | `3002` | integration administration, synced HR/foundation/time data, settings |
+| Pay UI | `3003` | payroll configuration, processing, results, financial outputs |
+| PostgreSQL | `5432` in shipped compose | dedicated deployment database; active profile/override must be verified |
 
-Module boundary: `nabd.core.*` tables are written **only** by the SF sync engine; `nabd.pay.*` is pay-owned.
-Pay reads Core; Core never writes Pay (it announces syncs on an in-process event bus).
+Core is always enabled. Pay is module-gated through `ModuleFlags`. Background work is in-process with `node-cron`/job configuration; Redis or BullMQ is not part of the current runtime.
 
-## Configuration surfaces (Nabd Pay)
+## Core routes and capabilities
 
-- **Component Studio** — the Pay Item catalogue: each item's kind, owner (Country pack / Tenant / SF-seeded),
-  effective window, and cumulation contract (which buckets it feeds: Gross / Taxable / SI / Variable).
-- **Parameters** — effective-dated rates, thresholds and limits that rules read by key.
-- **Bracket Tables** — tiered rate tables (income-tax brackets, end-of-service scales).
-- **Rule Studio / Rules** — the calculation rules that emit pay items.
-- **Schemes** — statutory scheme configuration (Social Insurance, End-of-Service, Leave Provision, Martyrs …).
-  Some are read-only ("Fork to edit"); some allow limited in-place edits.
-- **Country Packs** — a catalogue of items/tables/schemes shipped per country (Egypt pack here).
-- **Pay Calendars** — frequency, cut-off day, pay day, per pay group.
-- **Preflight Studio** — the checks that gate a run (e.g. `national_id_on_file`, `bank_accounts_present`);
-  each check can be toggled active/inactive.
-- **Bank File Templates** — payment-file formats (e.g. a CIB Egypt template).
-- **Payslip Templates** — payslip layout per pay group; one active template per pay group.
-- **G/L Mapping** — output routings that map pay results to ledger accounts per legal entity/company code.
+- `/hub`: landing and module handoff.
+- Employee and foundation streams: `/employees`, `/leave`, `/timesheet`, `/balances`, `/foundation`, `/s4-gl-accounts`, `/advances`.
+- Operations: audit, alerts, notifications, and Data Browser, including Time Account Types and current statutory/payment labels.
+- Settings: connection, schedule, advanced, notifications, modules, and branding.
+- SuccessFactors integration supports the connection modes implemented by the current clone, including SOAP Basic and OAuth2 SAML Bearer. Never put destination secrets in documentation.
+- Sync/job state is persisted in product entities and scheduled in process. Verify job enablement, schedule, last run, and result before assuming data is current.
 
-## Operate surfaces (Nabd Pay)
+## Pay routes and capabilities
 
-- **Control Center** — the run cockpit: open a cycle, cut off, run, approve, post to G/L, close.
-- **Readiness** — pre-run readiness checks over the cohort.
-- **Run wizard** — dry run (side-effect-free simulation) and actual run.
-- **Off-Cycle wizard** — one-time payments, loan disbursement, termination settlement, reversals.
-  Run types: One-Time (active); Advances/Loans disbursement; Termination. (An `Advances` tile may show SOON.)
-- **Retro dashboard** — pending back-dated triggers, approvals, resolved audit trail, manual trigger creation.
-- **Loans & Advances** — loan list, per-loan recovery schedule, installment schedules, compliance guardrails,
-  separation exposure, policy & loan types.
-- **Results / Payslip explorer** — per-employee run results and generated payslips.
+### Operate
 
-## Outputs
+- `/home`, `/readiness`, `/runs`, `/runs/new`, `/runs/:runId`, `/results`.
+- Run Wizard supports dry and actual flows plus CSV/XLSX employee-selection import.
+- Cutoff freezes the cycle cohort; actual execution requires the frozen cohort. Dry results can be discarded at cycle level with audit history.
+- Approval, G/L, bank, payslip, close, rerun cleanup, off-cycle, retro, loan, EoS/leave, analytics and report flows are state/role gated.
+- `/payroll/spot-run` is currently release-gated. Access requires the normal route role plus released feature state, or the pre-production-only tester scope.
 
-- **Payslips** — bulk-generated from a **closed** cycle's results (confirm-gated with a typed `GENERATE`).
-- **Bank File** — the payment file for the run (duplicate-payment protection).
-- **G/L Posting** — a balanced journal posted to S/4 (idempotent; no duplicate post over a posted journal).
-- **Reports** — a run-scoped catalogue in three categories:
-  - *Statutory* (official filings): PIT Register, SI Register, Statutory Base, YTD Tax, WPS/Bank File, Form 4.
-  - *Management* (reconciliation & cost): Payroll Summary, Cost-Center Rollup, G/L Posting Preview,
-    Headcount & Cost, Variance Analysis.
-  - *Audit* (evidence & sign-off): Retro Adjustments, Payroll Register, Approval Log.
-  Each report has **Preview** (routed content view) and **Download**; formats: PDF, Excel, CSV, JSON, XML.
-- **Analytics** — an executive cost board scoped by the selected pay group + period: KPI tiles (Total people
-  cost, Headcount, Cost per head, Cash to disburse, Payroll leakage), a cost-driver bridge, a Gross→Net
-  waterfall, a 12-month cost trend, and an employee/component/retro/run-history detail area.
+### Configure
 
-## Integrations
+- Component/Pay Item Studio: effective-dated pay items, cumulations, version timeline, derived `effectiveTo`, and supported hard-delete action.
+- Parameters, Schemes, and Bracket Tables: effective-dated lanes may contain gaps but must not overlap.
+- Country packs, rules, calendars, preflight/readiness, approval policies, G/L mapping/routing, bank templates, payslip templates, loans and other specialist configuration.
+- Calendar deletion semantics depend on use: dry/never-run calendars can be hard-deleted when the released capability permits; committed history is archived rather than erased.
 
-- **SuccessFactors** — employees, foundation, time/leave, and **advances** (which originate loans in Pay).
-- **S/4HANA** — G/L account (chart) sync and journal posting (via a BTP destination, e.g. `S4HANA` / `YCOA`).
-- **Banking** — bank payment file for disbursement.
+### Outputs and analysis
 
-## Employee lifecycle (Core)
+- Results and employee details apply compensation/identity access separately from route visibility.
+- Payslip Studio maintains preview/PDF parity, supports batch generation, and exposes retryable SuccessFactors push errors.
+- Bank Template Studio and Bank File support delimited, fixed-width, XLSX, and XML data-driven formats. See `reference/BANK_TEMPLATES.md`.
+- G/L Posting enforces mapping, balance, authorization, posting and reversal contracts.
+- Reports, Report Studio, analytics and exports use the eligible run and filters; analytics may fall back to dry-run data where the current handler permits it.
+- Report scheduling and AI-assisted capabilities are not part of this kit's committed workflow.
 
-New hire · rehire · mid-period hire · transfer · salary change · promotion · pay-group change ·
-bank-account change · suspension · termination · final settlement. All records are **effective-dated** —
-a change opens a new dated version rather than overwriting history.
+## Roles and access summary
+
+Current customer-facing roles: `tenant_admin`, `consultant`, `payroll_admin`, `payroll_manager`, `approver`, `hr_director`, `finance_director`; `tc_ops` is an operational Core role. `preprod_tester` is an environment-scoped preproduction capability, not a production business role.
+
+- Tenant admin: platform/config administration and release-board visibility; exact actions remain handler-gated.
+- Consultant: configuration author; no assumption of live compensation, personal data, or raw SF access.
+- Payroll admin: operational access and selected read-only configuration; Schemes/Packs/Preflight authoring is not implied.
+- Payroll manager / HR director: operational review and stage-one approval according to policy.
+- Finance director: financial approval and G/L post/reverse responsibilities.
+- Route visibility is not data authorization. Verify both the frontend guard and backend handler for sensitive actions.
+
+## Verification paths in the app clone
+
+1. `CLAUDE.md` and `docs/README.md`.
+2. Relevant `docs/core/**` or `docs/pay/features/**` feature document.
+3. `app-core/src/App.jsx` or `app-pay/src/App.jsx` and `app-pay/src/lib/role-routing.js`.
+4. Service `.cds` contract, handler under `srv/handlers/**`, schema under `db/**`, and focused tests.

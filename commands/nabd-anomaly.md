@@ -1,14 +1,8 @@
 ---
-description: Record a product anomaly observed while operating Nabd into the working anomalies register.
-argument-hint: <what you observed>
+description: Investigate and append an evidenced Nabd Core/Pay anomaly to the separate engineering register.
+argument-hint: <observed-behavior>
 ---
 
-Use the **nabd-pay-anomaly-recorder** skill to record this observation: **$ARGUMENTS**
+Use **nabd-pay-anomaly-recorder** for `$ARGUMENTS`.
 
-- If `findings/PRODUCT_ANOMALIES_REGISTER.md` doesn't exist yet, create it from
-  `templates/ANOMALY_REGISTER_TEMPLATE.md`.
-- Append one numbered, evidenced `## A-NN` entry: severity, status, area, the exact behaviour + reproduction,
-  why it matters (and whether it's a product defect or a training-tenant artifact), and concrete evidence
-  (screenshot path / SQL query / code `path:line`).
-- Record only what you can evidence. This register is handed to engineering separately and is **never shipped
-  inside the KUT material**.
+Reproduce and rule out environment, authorization/release, data, configuration and lifecycle causes. Append—never overwrite—a unique entry based on `templates/ANOMALY_REGISTER_TEMPLATE.md` with build/environment, persona, steps, expected/actual, evidence, severity/confidence, impact and safe workaround. Mask sensitive data. Do not edit the app clone or include this register in learner deliverables.

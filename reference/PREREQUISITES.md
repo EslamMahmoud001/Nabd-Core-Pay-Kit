@@ -1,44 +1,29 @@
 # Prerequisites
 
-What you need before using this kit to operate Nabd and generate KUT material.
+## Required
 
-## Accounts & access
-- **The Nabd application repository** — clone access to the Nabd Core+Pay codebase. This kit treats the app
-  repo as **clone-only**: you run it locally, you never push, pull, or open PRs against it.
-- **`default-env.json`** for the backend — this file is **gitignored** and carries the SuccessFactors (and any
-  S/4) BTP destinations. A fresh clone loses it; back it up and restore it, or the SF connection won't work.
-- (Optional) **SuccessFactors** destination for live sync, and an **S/4HANA** BTP destination
-  (e.g. `S4HANA` / `YCOA`) for GL account sync and posting. Without S/4 you seed/simulate (see SEEDED_DATA.md).
+- A clean clone of the current Nabd application repository. Treat it as read-only.
+- Node.js 18 or newer and npm.
+- Docker Desktop/Engine, or another PostgreSQL 16 instance compatible with the clone's active CAP profile.
+- The gitignored `default-env.json` supplied through the approved secret-management route when external destinations or environment overrides are needed.
+- A supported Chromium browser. Install Playwright browser binaries only when the target project does not already provide them.
+- Permission to use a non-production training/QA deployment and synthetic test data.
 
-## Tooling
-- **Node.js ≥ 18** (the backend, the front-ends, and the build pipeline all run on Node).
-- **Docker — conditional, not universal.** It is required **only** for the persistent **Postgres `NABD_ALT`**
-  training tenant (the one carrying the purged 17-employee roster and the configuration this kit was built on) —
-  which is what you want for reproducible payroll runs and KUT capture. If you only need to *explore* the app,
-  SAP CAP can run against an in-memory/SQLite database with the repo's seed data (no Docker) — but that path does
-  **not** have the seeded training state. **Decide the DB path first:** Postgres/NABD_ALT (needs Docker) for real
-  work, or SQLite for a quick look. KB-05 §1 covers the Postgres path.
-- **@sap/cds** (CAP) — provided by the app repo's `node_modules` after `npm install`.
-- **Playwright** + a **Chromium** build — for capturing screenshots. The app repo already depends on
-  Playwright; the capture scripts resolve Chromium from there.
-- **The build-pipeline dependencies** — `docx` and `pptxgenjs` (run `npm install` in `build-pipeline/`).
-- (Optional) **PowerPoint** (Windows) — only if you want to merge per-module decks into one combined deck via
-  COM automation. Not required to build the individual KUT documents.
+## KUT build only
 
-## Knowledge to skim first
-- **KB-05 (Environment, Runtime & Data)** — how to bring the stack up and the training dataset.
-- **KB-01 (System Guide)** — navigation, config surfaces, the gates.
-- **reference/BUSINESS_PROCESSES.md** and **reference/FEATURE_INVENTORY.md** — what to document and where it lives.
+- Run `npm install` in this kit's `build-pipeline/` directory.
+- Word and PowerPoint viewers for visual QA. PowerPoint desktop on Windows is optional and is needed only by the legacy deck-combine helper.
 
-## What the kit does NOT require
-- No PDF toolchain — the kit produces **Word + Slides** only (PDFs are intentionally not generated).
-- No cloud accounts to generate documents — the build pipeline is local Node.
-- No write access to the Nabd app repo — everything is done in **application configuration** and this kit's
-  own workspace, never by editing the app's code.
+## Before any operation
 
-## First-run checklist
-1. Restore `default-env.json` into the app repo backend, then `npm install` in the app repo.
-2. Start Docker Postgres and confirm `NABD_ALT` is up (KB-05 §1).
-3. Start the backend (`:4004`) and the two UIs (`:3002`, `:3003`).
-4. `npm install` in this kit's `build-pipeline/`.
-5. Verify the roster is the controlled 17 (KB-05 §3); re-purge if a sync repopulated it.
+1. Record the application path, branch, and `git rev-parse HEAD`.
+2. Confirm the clone is clean; do not discard user changes.
+3. Inspect `readme.md`, `.cdsrc.json`, `docker-compose.yml`, and the presence (not contents) of `default-env.json`.
+4. Confirm which database/profile is actually resolved. The compose defaults and CAP profile may be overridden; do not infer the live target from one file.
+5. Verify backend, Core, and Pay reachability and the authenticated persona's roles.
+6. Confirm that Pay is enabled and that any target feature is released for that persona.
+7. Inventory the current tenant state required by the task (calendar/cycle, employee cohort, configuration, and output templates).
+
+## Security
+
+Never print or copy secret file contents, access tokens, bank account numbers, national identifiers, or live compensation into a brief, log, screenshot, or generated KUT. Prefer masked previews and synthetic data.

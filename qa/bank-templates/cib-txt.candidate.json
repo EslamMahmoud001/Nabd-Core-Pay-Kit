@@ -1,0 +1,43 @@
+{
+  "templateKey": "cib-eg-fixed-width.draft",
+  "displayNameEn": "CIB Egypt fixed-width — DRAFT",
+  "formatKind": "fixed_width",
+  "fileExtension": "txt",
+  "encoding": "ascii",
+  "lineEnding": "crlf",
+  "spec": {
+    "fileNamePattern": "CIB_{periodMonth}",
+    "padChar": "0",
+    "params": [
+      { "key": "dateBlockDDMMYY", "label": "File date + value date (DDMMYYDDMMYY)", "type": "string" },
+      { "key": "headerAccountBlock", "label": "24-character CIB header account/control block", "type": "string" }
+    ],
+    "header": {
+      "enabled": true,
+      "fields": [
+        { "source": "literal", "literal": "H1", "width": 2, "truncate": false },
+        { "source": "literal", "literal": "401912206", "width": 9, "truncate": false },
+        { "source": "param", "paramKey": "dateBlockDDMMYY", "width": 12, "truncate": false },
+        { "source": "param", "paramKey": "headerAccountBlock", "width": 24, "truncate": false }
+      ]
+    },
+    "body": {
+      "fields": [
+        { "source": "literal", "literal": "D162", "width": 4, "truncate": false },
+        { "source": "accountNumber", "width": 12, "truncate": false },
+        { "source": "literal", "literal": "EGP", "width": 3, "truncate": false },
+        { "source": "amount", "width": 13, "align": "right", "pad": "0", "truncate": false, "transform": { "amount": { "decimals": 2, "scale": "minor" } } },
+        { "source": "literal", "literal": "CR", "width": 2, "truncate": false }
+      ]
+    },
+    "trailer": {
+      "enabled": true,
+      "fields": [
+        { "source": "literal", "literal": "T00000", "width": 6, "truncate": false },
+        { "source": "agg", "agg": "record_count", "width": 12, "align": "right", "pad": "0", "truncate": false },
+        { "source": "agg", "agg": "total_amount", "width": 19, "align": "right", "pad": "0", "truncate": false, "transform": { "amount": { "decimals": 2, "scale": "minor" } } }
+      ]
+    }
+  }
+}
+

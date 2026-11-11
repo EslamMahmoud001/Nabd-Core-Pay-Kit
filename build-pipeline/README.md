@@ -1,58 +1,41 @@
-# Nabd KUT Build Pipeline
+# Nabd KUT build pipeline
 
-The branded document pipeline that turns **real screenshots** into KUT deliverables in **Word + Slides**.
-Pure local Node — no cloud, no PDF toolchain.
+Local Node pipeline for branded Word + Slides Core + Pay training artifacts.
 
-## Setup
-```bash
-cd build-pipeline
-npm install            # installs docx@8.5.0 + pptxgenjs@4.0.1
+## Setup and validation
+
+```text
+npm install
+npm run check
+npm run example
 ```
 
-## Layout
-```
-build-pipeline/
-├── kutlib.js              # brand system + docx components (cover, tables, callouts, stepHeader, figureImg…)
-├── build_slides.js        # slide helpers (titleSlide, sectionDivider, bullets, table, stepSlide, tips, closing)
-├── render.js              # shared helpers
-├── build_template.js / build_example.js    # starting points for a NEW builder
-├── build_<id>_docx.js     # per-module Word builder   (bp01, bp02, bp09, bp10, bp13, bp18, cfg, fdcal01,
-├── build_<id>_slides.js   # per-module slide builder    fdrun01, fdrun02, readiness, payslips, reports,
-│                          #                              analytics, retro, loans)
-├── build_chrome.js        # intro / section-divider / outro "chrome" deck (for combining decks)
-├── build_master_overview.js  # optional one-slide-per-module overview deck
-├── assets/                # raptors_icon.png, sap_gold.png (referenced via __dirname)
-└── screenshots/<id>_real/ # per-module screenshots (INPUT) — the builders also WRITE the .docx/.pptx here
-```
+Shared libraries are `kutlib.js` (Word), `build_slides.js` (Slides), and `render.js`. `build_template.js` and `build_example.js` are clean starting points. The `build_<id>_docx.js` / `build_<id>_slides.js` files are thin current wrappers around `module_catalogue.js` and `build_module_model.js`; they intentionally produce `VERIFY` placeholders until a verified evidence manifest replaces them.
 
-## Build a module
-```bash
-# 1. copy the module's screenshots into  screenshots/<id>_real/
-# 2. build both formats
-node build_<id>_docx.js       # → screenshots/<id>_real/<CODE>_<Title>_KUT.docx
-node build_<id>_slides.js     # → screenshots/<id>_real/<CODE>_<Title>_KUT.pptx
+## New module
+
+1. Create a verified fact/screenshot manifest under the project working area.
+2. Use the target module wrapper or copy `build_template.js`; replace every `VERIFY` placeholder from evidence.
+3. Resolve screenshots and outputs relative to `__dirname` or accept explicit CLI paths. Never add a machine-specific absolute path.
+4. Build both `.docx` and `.pptx`.
+5. Open/render and visually inspect both, then apply KB-02's release checklist.
+
+Example naming:
+
+```text
+node build_<id>_docx.js
+node build_<id>_slides.js
 ```
 
-> ⚠️ **The pre-shipped `build_<id>_*.js` are reference examples, not runnable as-is.** Each is a *worked model*
-> from a real module, hard-wired to its own `meta`, step list, and `screenshots/<id>_real/` folder — which is
-> **not** included in the kit. Running one without its screenshots will fail. Treat them as read-and-copy
-> templates. Your only clean starting points are `build_template.js` / `build_example.js` and the closest model.
+The optional overview/chrome builders accept an output path:
 
-To author a NEW module, copy the closest pair:
-- **Plain KUT** → `build_fdrun01_docx.js` + `build_fdrun01_slides.js`.
-- **KUT with a Configuration section** → `build_bp09_*` or `build_cfg_*`.
-- **KUT that shows report/analytics/loan content** → `build_reports_*` / `build_analytics_*` / `build_loans_*`.
+```text
+node build_master_overview.js output/overview.pptx
+node build_chrome.js output/chrome.pptx
+```
 
-Set `IMG=(f)=>path.join("screenshots/<id>_real",f)`, the `meta` block, and the step list. Reuse `kutlib.js`
-(Word) and `build_slides.js` (Slides) so every doc stays on the same brand and section grammar.
+Do not infer success from file size alone. Screenshots, generated artifacts, credentials and tenant data remain untracked. Word + Slides are the shipped formats; PDF is not part of this pipeline.
 
-## Combine all module decks into one file (optional)
-Build every `build_<id>_slides.js`, then use `build_chrome.js` to generate the intro/transition/outro slides and
-merge with PowerPoint (Windows COM) — one program intro, a section-divider transition per business process, and
-one closing. See the kit's `knowledge-base/KB-04_Lessons_and_Playbook.md` for the merge recipe and the
-background-repair gotcha.
+## Dependency advisory
 
-## Rules
-- **Word + Slides only.** PDFs are intentionally not generated.
-- Screenshots are the source of truth — the builders never invent figures; the prose must match the images.
-- Outputs are MB-sized (screenshots embedded). A KB-sized output means an image didn't embed — investigate.
+As of the 2026-08-13 validation, npm reports a high-severity denial-of-service advisory in the transitive `image-size` package used by `pptxgenjs` for malformed ICNS/JXL/HEIF images. The pipeline only accepts PNG/JPEG screenshots and `build_slides.js` checks both extension and file signature before handing an image to `pptxgenjs`. Keep screenshot inputs trusted and locally captured; rerun `npm audit` during upgrades and remove this mitigation note only when the upstream dependency is fixed and the build is revalidated. Do not use `npm audit fix --force`, which currently proposes a breaking major downgrade.

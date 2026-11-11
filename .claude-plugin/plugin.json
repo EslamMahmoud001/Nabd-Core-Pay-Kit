@@ -1,7 +1,7 @@
 {
   "name": "nabd-pay-kit",
-  "version": "2.0.0",
-  "description": "A Claude Code kit to configure and operate the Nabd Core + Pay payroll platform on a local machine and generate professional Key User Training (KUT) material for its business processes — from real, captured screenshots. Ships three specialist skills (Trainer, Consultant, Documents Generator), two operational skills (Environment Setup, Anomaly Recorder), a knowledge base, a branded Word+Slides build pipeline, and slash commands.",
+  "version": "2.1.0",
+  "description": "Operate, validate, and document the current Nabd Core + Pay platform from a read-only application clone. Includes five skills, current Core/Pay knowledge and bank-template guidance, Playwright capture templates, QA gates, and a branded Word + Slides KUT pipeline.",
   "author": {
     "name": "Eslam Mahmoud",
     "url": "https://github.com/EslamMahmoud001"
@@ -9,14 +9,5 @@
   "homepage": "https://github.com/EslamMahmoud001/Nabd-Core-Pay-Kit",
   "repository": "https://github.com/EslamMahmoud001/Nabd-Core-Pay-Kit.git",
   "license": "UNLICENSED",
-  "keywords": [
-    "nabd",
-    "payroll",
-    "kut",
-    "training",
-    "successfactors",
-    "sap",
-    "documentation",
-    "playwright"
-  ]
+  "keywords": ["nabd", "core", "payroll", "kut", "training", "successfactors", "sap", "playwright", "bank-files"]
 }
