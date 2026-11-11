@@ -1,6 +1,6 @@
 {
-  "name": "nabd-core-pay-kit",
-  "version": "1.0.0",
+  "name": "nabd-pay-kit",
+  "version": "2.0.0",
   "description": "A Claude Code kit to configure and operate the Nabd Core + Pay payroll platform on a local machine and generate professional Key User Training (KUT) material for its business processes — from real, captured screenshots. Ships three specialist skills (Trainer, Consultant, Documents Generator), two operational skills (Environment Setup, Anomaly Recorder), a knowledge base, a branded Word+Slides build pipeline, and slash commands.",
   "author": {
     "name": "Eslam Mahmoud",

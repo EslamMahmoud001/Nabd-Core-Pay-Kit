@@ -1,5 +1,5 @@
 ---
-name: nabd-environment-setup
+name: nabd-pay-environment-setup
 description: >
   Bring the Nabd stack up on a local machine and verify it is healthy before any configuration, payroll run,
   or screenshot capture. Use to start/repair the environment (Docker Postgres NABD_ALT → backend :4004 →

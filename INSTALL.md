@@ -4,7 +4,7 @@ The repository is both a **Claude Code plugin** and a one-plugin **marketplace**
 (`.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json`), so it installs directly from GitHub.
 
 - **Marketplace name:** `nabd-kit`
-- **Plugin name:** `nabd-core-pay-kit`
+- **Plugin name:** `nabd-pay-kit`
 
 ## 1. Install from GitHub (recommended)
 
@@ -12,7 +12,7 @@ In Claude Code:
 
 ```
 /plugin marketplace add EslamMahmoud001/Nabd-Core-Pay-Kit
-/plugin install nabd-core-pay-kit@nabd-kit
+/plugin install nabd-pay-kit@nabd-kit
 ```
 
 Then restart Claude Code (or reload) so the skills and commands register. Verify:
@@ -21,7 +21,7 @@ Then restart Claude Code (or reload) so the skills and commands register. Verify
 /help            # the nabd-* commands should be listed
 ```
 
-Type a request like *"set up Nabd locally"* — the **nabd-environment-setup** skill should activate — or run
+Type a request like *"set up Nabd locally"* — the **nabd-pay-environment-setup** skill should activate — or run
 `/nabd-setup`.
 
 ## 2. Install from a local clone
@@ -34,7 +34,7 @@ Then in Claude Code point the marketplace at the local path:
 
 ```
 /plugin marketplace add /absolute/path/to/Nabd-Core-Pay-Kit
-/plugin install nabd-core-pay-kit@nabd-kit
+/plugin install nabd-pay-kit@nabd-kit
 ```
 
 ## 3. Manual install (no marketplace)
@@ -47,7 +47,7 @@ Claude Code auto-discovers both once the plugin is enabled.
 
 ```
 /plugin marketplace update nabd-kit
-/plugin update nabd-core-pay-kit
+/plugin update nabd-pay-kit
 ```
 
 (Or `git pull` a local clone and re-run the marketplace update.)

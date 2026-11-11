@@ -29,7 +29,7 @@
 | Layer | Who | Role |
 |---|---|---|
 | **Orchestrator** | Claude Code | Reads the KB, plans, sequences the skills, reviews all output, owns the final judgment, keeps the project log updated. |
-| **Domain skills** | `nabd-the-trainer`, `nabd-the-consultant`, `nabd-documents-generator` | Knowledge stewardship, app operation + capture, and KUT/UAT production (see their SKILL.md + KB-01…KB-05). |
+| **Domain skills** | `nabd-pay-trainer`, `nabd-pay-consultant`, `nabd-pay-documents` | Knowledge stewardship, app operation + capture, and KUT/UAT production (see their SKILL.md + KB-01…KB-05). |
 | **Delegate skills** | `codex-delegate` ✅ ready · `opencode-delegate` ⚠️ CLI not installed | On Nabd: **read-only diagnosis only** (§0, §9). The "background implementer" role these skills advertise is **not available here** — the repo is clone-only. |
 
 The domain skills know *the payroll product*; the delegate skills know *how to offload code changes*. Together they let one orchestrator run the whole cycle.

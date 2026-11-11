@@ -25,16 +25,16 @@ The two workflows chain: `/nabd-setup` → `/nabd-capture <BP>` → `/nabd-build
 ## What's inside
 
 ```
-nabd-core-pay-kit/
+nabd-pay-kit/
 ├── .claude-plugin/
 │   ├── plugin.json            # plugin manifest
 │   └── marketplace.json       # so `/plugin marketplace add` works from GitHub
 ├── skills/
-│   ├── nabd-the-trainer/          knowledge steward — owns the KB, writes briefs
-│   ├── nabd-the-consultant/       expert operator — configures Nabd, captures evidence
-│   ├── nabd-documents-generator/  deliverable factory — builds Word + Slides, runs QA
-│   ├── nabd-environment-setup/    brings the stack up and verifies it is healthy
-│   └── nabd-anomaly-recorder/     records product anomalies to the working register
+│   ├── nabd-pay-trainer/          knowledge steward — owns the KB, writes briefs
+│   ├── nabd-pay-consultant/       expert operator — configures Nabd, captures evidence
+│   ├── nabd-pay-documents/  deliverable factory — builds Word + Slides, runs QA
+│   ├── nabd-pay-environment-setup/    brings the stack up and verifies it is healthy
+│   └── nabd-pay-anomaly-recorder/     records product anomalies to the working register
 ├── commands/
 │   ├── nabd-setup.md · nabd-capture.md · nabd-build.md · nabd-kut.md · nabd-anomaly.md
 ├── knowledge-base/            KB-01 System · KB-02 Methodology · KB-04 Lessons/Playbook ·
@@ -67,7 +67,7 @@ This repo is both a **plugin** and a one-plugin **marketplace**, so you can inst
 
 ```
 /plugin marketplace add EslamMahmoud001/Nabd-Core-Pay-Kit
-/plugin install nabd-core-pay-kit@nabd-kit
+/plugin install nabd-pay-kit@nabd-kit
 ```
 
 See **[INSTALL.md](INSTALL.md)** for a manual install and for updating.

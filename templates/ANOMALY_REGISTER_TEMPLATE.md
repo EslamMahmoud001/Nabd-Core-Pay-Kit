@@ -12,7 +12,7 @@
 - Distinguish a **product defect** (wrong behaviour) from a **config/data artifact** of the training tenant —
   say which you believe it is, and why.
 - If a KUT screenshot shows the anomaly, name the file so engineering can see it in context.
-- The `nabd-anomaly-recorder` skill automates appending well-formed entries here.
+- The `nabd-pay-anomaly-recorder` skill automates appending well-formed entries here.
 
 ## Entry format
 
