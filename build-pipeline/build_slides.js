@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const PptxGenJS = require("pptxgenjs");
 const ASSET = (f) => path.join(__dirname, "assets", f);
 
@@ -7,6 +8,19 @@ const C = { teal:"43BECC", navy:"121B43", magenta:"8E257A", lime:"BCD647", crims
   tint:"F4F6FB", tealTint:"EAF8FA", limeTint:"F5F9E4", magTint:"F6EAF3", crimTint:"FCEAEE", navyTint:"E9EBF2", amberTint:"FBF1DF", amber:"C77A00", green:"2E7D32" };
 const W = 13.33, H = 7.5, M = 0.5;
 const FS = "Arial";
+
+// The capture workflow produces PNG/JPEG. Reject renamed or unsupported input
+// before pptxgenjs/image-size can route it through ICNS/JXL/HEIF parsers.
+function assertSafeRaster(imagePath) {
+  const ext = path.extname(imagePath).toLowerCase();
+  if (![".png", ".jpg", ".jpeg"].includes(ext)) throw new Error(`Unsupported screenshot format: ${ext || "(none)"}`);
+  const head = fs.readFileSync(imagePath).subarray(0, 12);
+  const pngMagic = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const png = head.length >= 8 && head.subarray(0, 8).equals(pngMagic);
+  const jpeg = head.length >= 3 && head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff;
+  if ((ext === ".png" && !png) || (ext !== ".png" && !jpeg)) throw new Error(`Screenshot content does not match its extension: ${imagePath}`);
+  return imagePath;
+}
 
 function footer(slide, meta, right) {
   slide.addText([{ text:(meta.module||"Nabd Pay"), options:{ bold:true, color:C.navy }}, { text:"  ·  Key User Training", options:{ color:C.grey }}],
@@ -27,7 +41,7 @@ function dots(slide, x, y) {
 
 function titleSlide(pptx, meta) {
   const s = pptx.addSlide(); s.background = { color:C.navy };
-  try { s.addImage({ path:ASSET("raptors_icon.png"), x:W/2-0.55, y:0.9, w:1.1, h:1.23 }); } catch(e){}
+  try { s.addImage({ path:assertSafeRaster(ASSET("raptors_icon.png")), x:W/2-0.55, y:0.9, w:1.1, h:1.23 }); } catch(e){}
   s.addText((meta.module||"Nabd Pay").toUpperCase(), { x:0, y:2.3, w:W, h:0.9, fontFace:FS, fontSize:52, bold:true, color:"FFFFFF", align:"center", charSpacing:4 });
   s.addText("Key User Training  ·  User Manual", { x:0, y:3.2, w:W, h:0.5, fontFace:FS, fontSize:18, bold:true, color:C.teal, align:"center", charSpacing:2 });
   s.addShape("roundRect",{ x:W/2-4.2, y:4.0, w:8.4, h:1.35, rectRadius:0.1, fill:{color:"1B2657"}, line:{color:C.teal, width:1} });
@@ -84,18 +98,6 @@ function rolesSlide(pptx, meta, rows) {
   tableSlide(pptx, meta, "Who uses this manual", "Roles & Responsibilities",
     ["Role","System permission","Responsibility in this process"], rows, [3.0, 3.5, 5.83], C.magenta, meta.bpId+"  ·  Roles");
 }
-function prereqSlide(pptx, meta, rows) {
-  const s = pptx.addSlide(); eyebrow(s, "Before you start", M, 0.35, 8); title(s, "Prerequisites & Preconditions", { y:0.65 });
-  const y0=1.75, rh=0.82;
-  rows.forEach((r,i)=>{ const y=y0+i*rh;
-    s.addShape("roundRect",{ x:M, y, w:W-2*M, h:rh-0.14, rectRadius:0.06, fill:{color: i%2?C.tint:"FFFFFF"}, line:{color:C.line, width:1} });
-    s.addText("", { x:M+0.18, y:y+0.16, w:0.34, h:0.34, fontFace:FS });
-    s.addShape("rect",{ x:M+0.2, y:y+0.16, w:0.32, h:0.32, fill:{color:"FFFFFF"}, line:{color:C.magenta, width:1.5} });
-    s.addText(r[0], { x:M+0.75, y:y+0.05, w:3.9, h:rh-0.2, fontFace:FS, fontSize:13, bold:true, color:C.ink, valign:"middle" });
-    s.addText(r[1], { x:M+4.8, y:y+0.05, w:W-2*M-5.0, h:rh-0.2, fontFace:FS, fontSize:12, color:C.body, valign:"middle" });
-  });
-  footer(s, meta, meta.bpId+"  ·  Prerequisites");
-}
 function overviewSlide(pptx, meta, items) {
   const s = pptx.addSlide(); eyebrow(s, "The big picture", M, 0.35, 8); title(s, "Process Overview", { y:0.65 });
   const y0=1.7, rh=Math.min(0.9,(5.2/items.length)); 
@@ -140,7 +142,7 @@ function stepSlide(pptx, meta, ctx) {
   if (ctx.imgPath) {
     const iw=sw, ih=iw/1.6, iy=1.15+(5.15-ih)/2;
     s.addShape("roundRect",{ x:sx-0.05, y:iy-0.05, w:iw+0.1, h:ih+0.1, rectRadius:0.05, fill:{color:"FFFFFF"}, line:{color:C.line, width:1} });
-    s.addImage({ path:ctx.imgPath, x:sx, y:iy, w:iw, h:ih });
+    s.addImage({ path:assertSafeRaster(ctx.imgPath), x:sx, y:iy, w:iw, h:ih });
     if (ctx.screenshot) s.addText(ctx.screenshot, { x:sx, y:iy+ih+0.08, w:iw, h:0.7, fontFace:FS, fontSize:10, italic:true, color:C.grey, align:"center", valign:"top" });
   } else {
     s.addShape("roundRect",{ x:sx, y:1.15, w:sw, h:5.15, rectRadius:0.08, fill:{color:C.tint}, line:{color:C.teal, width:1.25, dashType:"dash"} });
@@ -188,7 +190,7 @@ function buildDeck(model, outPath) {
   if (hasConfig) {
     sectionDivider(pptx, "Section", "Configuration", "One-time setup performed by the configuration team");
     model.configTasks.forEach((task, ti) => task.steps.forEach((st, si) =>
-      stepSlide(pptx, meta, { tag:"Configuration "+(ti+1)+" — "+task.name, role:task.role||"Configuration Admin",
+      stepSlide(pptx, meta, { tag:"Configuration "+(ti+1)+" — "+task.name, role:task.role||"[VERIFY AUTHORIZED ROLE]",
         n:si+1, action:st.action, nav:st.nav, expected:st.expected, note:st.note, screenshot:st.screenshot,
         footerRight:meta.bpId+"  ·  Config "+(ti+1)+"."+(si+1) })));
   }
@@ -209,10 +211,10 @@ function buildDeck(model, outPath) {
   return pptx.writeFile({ fileName: outPath }).then(()=>console.log("wrote", outPath));
 }
 
-module.exports = { buildDeck, titleSlide, sectionDivider, bulletsSlide, infoGridSlide, tableSlide, rolesSlide, overviewSlide, stepSlide, tipsSlide, closingSlide, footer, C, W, H, M, FS };
+module.exports = { buildDeck, assertSafeRaster, titleSlide, sectionDivider, bulletsSlide, infoGridSlide, tableSlide, rolesSlide, overviewSlide, stepSlide, tipsSlide, closingSlide, footer, C, W, H, M, FS };
 if (require.main === module) (async () => {
   const ex = require("./build_example.js").model;
   const tpl = require("./build_template.js").model;
-  await buildDeck(ex, "BP-04_Regular_Payroll_Dry_Run_KUT.pptx");
-  await buildDeck(tpl, "Nabd_Pay_KUT_Template.pptx");
+  await buildDeck(ex, "Nabd_Core_Pay_Pipeline_Example.pptx");
+  await buildDeck(tpl, "Nabd_Core_Pay_KUT_Template.pptx");
 })();

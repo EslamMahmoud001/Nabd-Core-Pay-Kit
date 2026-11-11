@@ -1,101 +1,70 @@
-// capture_TEMPLATE.mjs — the house pattern for Nabd screenshot capture.
-//
-// Copy to  <app-repo>/Payroll_KUT/Nabd-User-Manual/Screenshots/capture_<id>.mjs
-// and RUN FROM THE RUNNING NABD REPO ROOT (the one serving :3003, so Playwright resolves there):
-//     node "<abs path>/capture_<id>.mjs"
-//
-// Principles (KB-04 §3):
-//   • Assert each screen by its REAL text before shooting; write _failure.png + url + body head on any failure.
-//   • md5 every PNG; THROW on a duplicate (byte-identical screens are the #1 silent capture bug).
-//   • Advance wizards via FOOTER buttons, not step-rail nodes. Use selectOption / a select's inputValue()
-//     for native <select> — never assert a select's option as visible text.
-//   • Poll async state (aria-selected tabs, row counts) instead of reading once.
-//   • Do NOT put \b after a digit in any regex (textContent concatenates: "STEP 2One-time…").
-//   • Viewing/preview only unless the task truly calls for a consequential action.
+// Copy into a project working area and run from the Nabd app clone root.
+// Usage: node capture_<id>.mjs <output-directory>
+// Optional env: NABD_BASE_URL, NABD_DEV_USER. Local Basic auth is read from
+// NABD_BASIC_USER/NABD_BASIC_PASSWORD only when both are set; never hard-code secrets.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 
-// ── config ──────────────────────────────────────────────────────────
-const PAY  = 'http://localhost:3003';   // Nabd Pay   (use 3002 for Core screens)
-const OUT_DIR = 'C:\\path\\to\\Screenshots\\<ID>';   // absolute; one folder per module
+const BASE_URL = process.env.NABD_BASE_URL || 'http://localhost:3003';
+const OUT_DIR = path.resolve(process.argv[2] || path.join(process.cwd(), 'Screenshots', 'MODULE-ID'));
+const DEV_USER = process.env.NABD_DEV_USER;
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
-// ── resolve Playwright's chromium from the app repo ─────────────────
 function loadChromium() {
-  const bases = [process.cwd(), path.join(process.cwd(), 'app-pay'), path.join(process.cwd(), '..'), path.join(process.cwd(), '..', 'app-pay')];
-  for (const b of bases) {
+  for (const base of [process.cwd(), path.join(process.cwd(), 'app-pay'), path.join(process.cwd(), 'app-core')]) {
     try {
-      const req = createRequire(path.join(b, 'noop.js'));
-      let m; try { m = req('@playwright/test'); } catch { m = req('playwright'); }
-      if (m && m.chromium) { console.log('Using Playwright from:', b); return m.chromium; }
+      const req = createRequire(path.join(base, 'noop.js'));
+      let pkg;
+      try { pkg = req('@playwright/test'); } catch { pkg = req('playwright'); }
+      if (pkg?.chromium) return pkg.chromium;
     } catch {}
   }
-  throw new Error('Could not resolve Playwright chromium — run from the app repo root.');
+  throw new Error('Playwright Chromium was not found from the application clone.');
 }
 
-// ── screenshot with md5 dedup guard ─────────────────────────────────
 const seen = new Map();
-const log = [];
-async function shot(page, name) {
+const manifest = [];
+
+async function capture(page, name, expectation) {
+  await expectation();
   const file = path.join(OUT_DIR, `${name}.png`);
-  await page.screenshot({ path: file, fullPage: false });
-  const md5 = crypto.createHash('md5').update(fs.readFileSync(file)).digest('hex');
-  if ([...seen.values()].includes(md5)) throw new Error(`DUPLICATE screenshot ${name}.png (md5 ${md5.slice(0,8)}) — a stalled flow shot the same screen twice.`);
-  seen.set(name, md5);
-  log.push(`  OK   ${name}.png  (md5 ${md5.slice(0,8)})`);
+  await page.screenshot({ path: file, fullPage: false, animations: 'disabled' });
+  const hash = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const duplicate = [...seen.entries()].find(([, prior]) => prior === hash);
+  if (duplicate) throw new Error(`Duplicate screenshot: ${name}.png equals ${duplicate[0]}.png`);
+  seen.set(name, hash);
+  manifest.push({ name, file, sha256: hash, url: page.url() });
 }
 
-// ── assert visible text before shooting ─────────────────────────────
-async function assertExact(page, text, label = text, timeout = 20000) {
-  await page.getByText(text, { exact: true }).first().waitFor({ state: 'visible', timeout });
-  log.push(`  assert exact: ${JSON.stringify(label)}`);
-}
-async function assertBodyIncludes(page, text, label = text, timeout = 20000) {
-  await page.locator('body', { hasText: text }).first().waitFor({ state: 'visible', timeout });
-  log.push(`  assert text: ${JSON.stringify(label)}`);
-}
+const chromium = loadChromium();
+const browser = await chromium.launch();
+const credentials = process.env.NABD_BASIC_USER && process.env.NABD_BASIC_PASSWORD
+  ? { username: process.env.NABD_BASIC_USER, password: process.env.NABD_BASIC_PASSWORD }
+  : undefined;
+const context = await browser.newContext({
+  viewport: { width: 1440, height: 1000 },
+  deviceScaleFactor: 2,
+  httpCredentials: credentials,
+});
+if (DEV_USER) await context.addCookies([{ name: 'dev_user', value: DEV_USER, domain: 'localhost', path: '/' }]);
+const page = await context.newPage();
 
-// ── run ─────────────────────────────────────────────────────────────
-const run = async () => {
-  const chromium = loadChromium();
-  const browser = await chromium.launch();
-  const ctx = await browser.newContext({
-    viewport: { width: 1440, height: 1000 },
-    deviceScaleFactor: 2,
-    httpCredentials: { username: 'ahmed', password: 'ahmed' },
+try {
+  await page.goto(`${BASE_URL}/<verified-route>`, { waitUntil: 'networkidle', timeout: 30_000 });
+  await capture(page, '01-verified-screen', async () => {
+    await page.getByRole('heading', { name: '<verified heading>' }).waitFor({ state: 'visible' });
+    // Add assertions that uniquely prove the intended state. Mask sensitive fields before capture.
   });
-  await ctx.addCookies([{ name: 'dev_user', value: 'ahmed', domain: 'localhost', path: '/' }]);
-  const page = await ctx.newPage();
-  let failed = null;
-  console.log(`\n=== <ID> capture ===\n`);
 
-  try {
-    // 01 — <describe screen>
-    await page.goto(`${PAY}/<route>`, { waitUntil: 'networkidle', timeout: 30000 });
-    await assertExact(page, '<real heading text>');
-    // ...more asserts that prove the screen shows the state this step describes...
-    await shot(page, '01-<screen-name>');
-
-    // 02 — <next screen> ...
-  } catch (e) {
-    failed = String(e?.message || e).split('\n')[0];
-    log.push(`  FLOW STOPPED — ${failed}`);
-    try {
-      await page.screenshot({ path: path.join(OUT_DIR, '_failure.png'), fullPage: false });
-      log.push(`  failure URL : ${page.url()}`);
-      log.push(`  body head   : ${(await page.locator('body').innerText()).slice(0, 240).replace(/\s+/g, ' ')}`);
-    } catch {}
-  }
-
+  fs.writeFileSync(path.join(OUT_DIR, 'capture-manifest.json'), JSON.stringify(manifest, null, 2));
+  console.log(`Captured ${manifest.length} unique screenshot(s) to ${OUT_DIR}`);
+} catch (error) {
+  try { await page.screenshot({ path: path.join(OUT_DIR, '_failure.png'), fullPage: false }); } catch {}
+  console.error(`Capture failed at ${page.url()}: ${error.message}`);
+  process.exitCode = 1;
+} finally {
   await browser.close();
-  console.log(log.join('\n'));
-  console.log(`\n--- md5 summary (${seen.size} unique) ---`);
-  for (const [name, md5] of seen) console.log(`  ${md5}  ${name}.png`);
-  if (failed) { console.log(`\n*** CAPTURE FAILED: ${failed}\n*** Do not use this screenshot set.`); process.exit(1); }
-  console.log('\nAll screenshots are unique.');
-};
-
-run();
+}

@@ -1,18 +1,8 @@
 ---
-description: Bring the Nabd stack up locally and verify it is healthy (Postgres → backend → Core/Pay UIs).
+description: Start or verify a local Nabd Core + Pay stack and capture its actual runtime/tenant state.
+argument-hint: [application-clone-path]
 ---
 
-Use the **nabd-pay-environment-setup** skill to bring the Nabd stack up and verify it is healthy.
+Use **nabd-pay-environment-setup** for `$ARGUMENTS`.
 
-Steps:
-1. Read the kit's `knowledge-base/KB-05_Environment_Runtime_and_Data.md` §1 for the exact commands.
-2. Start (or confirm) Docker Postgres `NABD_ALT` (:55432), the backend (:4004), and the two UIs — Core (:3002)
-   and Pay (:3003).
-3. Verify healthy: backend returns 200; both UIs reachable on `localhost` (remember the IPv6 `::1` binding —
-   `127.0.0.1` may look "down" when the app is up; "port already in use" means it is already running).
-4. Confirm the controlled 17-employee roster (`select count(*) from nabd_core_persons` → 17); re-purge if a sync
-   repopulated it.
-5. Report exactly what you started, what you verified, and the one command that proves each part is up. Record
-   the environment state in the project log (`KUT_COVERAGE_AUDIT.md`).
-
-$ARGUMENTS
+Record clone commit/worktree; reconcile `readme.md`, `.cdsrc.json`, compose and external-env presence; determine the resolved database/profile without exposing secrets; start/verify PostgreSQL → backend `:4004` → Core `:3002` → Pay `:3003`; prove authenticated bootstrap, module enablement, persona roles and target feature release. Snapshot task-relevant Core jobs/data and Pay lifecycle/config state. Do not require an old database name or employee count, and do not edit the clone.

@@ -1,0 +1,38 @@
+{
+  "templateKey": "qnb-eg-xlsx.draft",
+  "displayNameEn": "QNB Egypt salary upload — DRAFT",
+  "formatKind": "xlsx",
+  "fileExtension": "xlsx",
+  "encoding": "utf8",
+  "lineEnding": "crlf",
+  "spec": {
+    "fileNamePattern": "QNB_{periodMonth}",
+    "sheetName": "QNB_sheet",
+    "params": [
+      { "key": "customerId", "label": "QNB customer ID", "type": "string" }
+    ],
+    "header": {
+      "enabled": true,
+      "fields": [
+        { "source": "literal", "literal": "Branch code." },
+        { "source": "literal", "literal": "Customer ID #" },
+        { "source": "literal", "literal": "Account Number" },
+        { "source": "literal", "literal": "Employee Name" },
+        { "source": "literal", "literal": "code" },
+        { "source": "literal", "literal": "reason" },
+        { "source": "literal", "literal": "amount" }
+      ]
+    },
+    "body": {
+      "fields": [
+        { "source": "routingNumber", "cellType": "number", "numFmt": "General" },
+        { "source": "param", "paramKey": "customerId", "cellType": "number", "numFmt": "General" },
+        { "source": "accountNumber", "cellType": "text", "numFmt": "@" },
+        { "source": "employeeName", "cellType": "text" },
+        { "source": "routingNumber", "cellType": "number", "numFmt": "General" },
+        { "source": "literal", "literal": "salary", "cellType": "text" },
+        { "source": "amount", "cellType": "number", "numFmt": "@", "transform": { "amount": { "decimals": 2 } } }
+      ]
+    }
+  }
+}

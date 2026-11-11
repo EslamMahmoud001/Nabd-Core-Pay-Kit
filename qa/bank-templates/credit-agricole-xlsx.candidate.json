@@ -1,0 +1,21 @@
+{
+  "templateKey": "credit-agricole-eg-xlsx.draft",
+  "displayNameEn": "Credit Agricole Egypt salary upload — DRAFT",
+  "formatKind": "xlsx",
+  "fileExtension": "xlsx",
+  "encoding": "utf8",
+  "lineEnding": "crlf",
+  "spec": {
+    "fileNamePattern": "Credit Agricole {periodMonthFull}",
+    "sheetName": "Sheet1",
+    "body": {
+      "fields": [
+        { "source": "accountNumber", "cellType": "text", "numFmt": "@" },
+        { "source": "employeeName", "cellType": "text", "numFmt": "@" },
+        { "source": "literal", "literal": "Salary", "cellType": "text", "numFmt": "@" },
+        { "source": "amount", "cellType": "text", "numFmt": "@", "transform": { "amount": { "decimals": 0 } } }
+      ]
+    }
+  }
+}
+

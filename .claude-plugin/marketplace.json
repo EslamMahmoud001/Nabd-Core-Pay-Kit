@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Marketplace hosting the Nabd Core + Pay Kit for Claude Code.",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "plugins": [
     {
       "name": "nabd-pay-kit",
       "source": "./",
-      "description": "Configure and operate Nabd (Core + Pay) locally and generate KUT training material for its business processes.",
-      "version": "2.0.0",
+      "description": "Operate, validate, and document Nabd Core + Pay, including bank templates and KUT Word + Slides output.",
+      "version": "2.1.0",
       "author": { "name": "Eslam Mahmoud" }
     }
   ]

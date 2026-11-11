@@ -1,0 +1,66 @@
+{
+  "templateKey": "hsbc-eg-ach.draft",
+  "displayNameEn": "HSBC Egypt ACH salary upload — DRAFT",
+  "formatKind": "delimited",
+  "fileExtension": "csv",
+  "encoding": "utf8",
+  "lineEnding": "crlf",
+  "spec": {
+    "fileNamePattern": "HSBC_{periodMonth}",
+    "delimiter": ",",
+    "quote": "\"",
+    "quoteWhen": "as_needed",
+    "params": [
+      { "key": "debitAccount", "label": "Debit account number", "type": "string" },
+      { "key": "firstPartyReference", "label": "First-party reference", "type": "string" },
+      { "key": "secondPartyReference", "label": "Second-party reference", "type": "string" },
+      { "key": "paymentSetCode", "label": "Payment set code", "type": "string", "default": "D01" },
+      { "key": "lccCbidCode", "label": "LCC/CBID code", "type": "string" }
+    ],
+    "header": {
+      "enabled": true,
+      "fields": [
+        { "source": "literal", "literal": "Payment type" }, { "source": "literal", "literal": "Debit Account Number" },
+        { "source": "literal", "literal": "Debit Account Country" }, { "source": "literal", "literal": "Debit Account Currency" },
+        { "source": "literal", "literal": "Transaction currency" }, { "source": "literal", "literal": "Transaction Amount" },
+        { "source": "literal", "literal": "Value Date" }, { "source": "literal", "literal": "First Party Reference" },
+        { "source": "literal", "literal": "Payment Set Code" }, { "source": "literal", "literal": "Bene Name" },
+        { "source": "literal", "literal": "Address 1" }, { "source": "literal", "literal": "Address 2" },
+        { "source": "literal", "literal": "Address 3" }, { "source": "literal", "literal": "Bene Account No" },
+        { "source": "literal", "literal": "Bene Country Code" }, { "source": "literal", "literal": "Second Party Reference" },
+        { "source": "literal", "literal": "Second Party ID" }, { "source": "literal", "literal": "LCC code/CBID code" },
+        { "source": "literal", "literal": "ADVICE-TEXT" }, { "source": "literal", "literal": "E-mail ID-1" },
+        { "source": "literal", "literal": "Name of EM recepient 1" }, { "source": "literal", "literal": "E-mail ID-2" },
+        { "source": "literal", "literal": "Name of EM recepient 2" }, { "source": "literal", "literal": "E-mail ID-3" },
+        { "source": "literal", "literal": "Name of EM recepient 3" }, { "source": "literal", "literal": "E-mail ID-4" },
+        { "source": "literal", "literal": "Name of EM recepient 4" }, { "source": "literal", "literal": "E-mail ID-5" },
+        { "source": "literal", "literal": "Name of EM recepient 5" }, { "source": "literal", "literal": "E-mail ID-6" },
+        { "source": "literal", "literal": "Name of EM recepient 6" }, { "source": "literal", "literal": "Remittance Information 1" },
+        { "source": "literal", "literal": "Remittance Information 2" }, { "source": "literal", "literal": "Remittance Information 3" },
+        { "source": "literal", "literal": "Remittance Information 4" }, { "source": "literal", "literal": "Charges Code" },
+        { "source": "literal", "literal": "Purpose of Payment" }, { "source": "literal", "literal": "SWIFT BIC / LCC Code Indicator" }
+      ]
+    },
+    "body": {
+      "fields": [
+        { "source": "literal", "literal": "ACH" }, { "source": "param", "paramKey": "debitAccount" },
+        { "source": "literal", "literal": "EG" }, { "source": "fileCurrency" }, { "source": "fileCurrency" },
+        { "source": "amount", "transform": { "amount": { "decimals": 0 } } },
+        { "source": "valueDate", "transform": { "date": { "format": "YYYYMMDD" } } },
+        { "source": "param", "paramKey": "firstPartyReference" }, { "source": "param", "paramKey": "paymentSetCode" },
+        { "source": "employeeName" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "" }, { "source": "accountNumber" }, { "source": "literal", "literal": "EG" },
+        { "source": "param", "paramKey": "secondPartyReference" }, { "source": "row_number" },
+        { "source": "param", "paramKey": "lccCbidCode" },
+        { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" }, { "source": "literal", "literal": "" },
+        { "source": "literal", "literal": "SALA" }, { "source": "literal", "literal": "" }
+      ]
+    }
+  }
+}
+

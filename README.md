@@ -1,116 +1,67 @@
 # Nabd Core + Pay Kit
 
-A **Claude Code plugin** that lets a team **configure and operate the Nabd Core + Pay payroll platform on a
-local machine** and **generate professional Key User Training (KUT) material** for its business processes —
-built from real, captured screenshots, on the same brand.
+A Claude Code plugin for operating and documenting the current Nabd **Core + Pay** platform. It provides five focused skills, matching commands, an evidence-based knowledge base, capture templates, QA gates, and a branded Word + Slides KUT pipeline.
 
-It packages five skills, a knowledge base, a set of reference docs, working templates, a branded Word + Slides
-build pipeline, and slash commands into one installable kit.
+The kit does not include the Nabd application, credentials, tenant data, or bank secrets. Workforce, AI/Compliance and deferred roadmap features are out of scope.
 
----
+## Capabilities
 
-## What you can do with it
-
-1. **Bring Nabd up locally and operate it** — Postgres → backend → Core (`:3002`) / Pay (`:3003`), configure
-   pay items / calendars / packs / preflight / bank & payslip templates / G/L mapping, and run the full payroll
-   lifecycle (readiness → cut off → run → approve → post → close).
-2. **Generate KUT material for a business process** — capture a clean, de-duplicated screenshot set with
-   Playwright, then build a **Word manual + slide deck** with the branded pipeline, following a strict
-   methodology and QA checklist.
-
-The two workflows chain: `/nabd-setup` → `/nabd-capture <BP>` → `/nabd-build <BP>` (or `/nabd-kut <BP>` end to end).
-
----
-
-## What's inside
-
-```
-nabd-pay-kit/
-├── .claude-plugin/
-│   ├── plugin.json            # plugin manifest
-│   └── marketplace.json       # so `/plugin marketplace add` works from GitHub
-├── skills/
-│   ├── nabd-pay-trainer/          knowledge steward — owns the KB, writes briefs
-│   ├── nabd-pay-consultant/       expert operator — configures Nabd, captures evidence
-│   ├── nabd-pay-documents/  deliverable factory — builds Word + Slides, runs QA
-│   ├── nabd-pay-environment-setup/    brings the stack up and verifies it is healthy
-│   └── nabd-pay-anomaly-recorder/     records product anomalies to the working register
-├── commands/
-│   ├── nabd-setup.md · nabd-capture.md · nabd-build.md · nabd-kut.md · nabd-anomaly.md
-├── knowledge-base/            KB-01 System · KB-02 Methodology · KB-04 Lessons/Playbook ·
-│                              KB-05 Environment/Runtime/Data · KB-06 Agent Delegation
-├── reference/                 BUSINESS_PROCESSES · FEATURE_INVENTORY · SEEDED_DATA ·
-│                              PREREQUISITES · ASSUMPTIONS
-├── templates/                 ANOMALY_REGISTER · COVERAGE_AUDIT (project log) · capture_TEMPLATE.mjs
-└── build-pipeline/            kutlib.js + build_slides.js + per-module builders + brand assets
-```
-
-### The five skills (how they work together)
-
-- **The Trainer** — the memory. Owns the knowledge base, keeps it true to the running app, and writes small
-  task-scoped **briefs** that feed the other two.
-- **The Consultant** — the hands. Drives Nabd end to end, configures it, and writes/validates the Playwright
-  **capture scripts** that produce clean screenshots.
-- **The Documents Generator** — the factory. Turns verified facts + real screenshots into polished **Word +
-  Slides**, and never ships something that fails its own QA checklist.
-- **Environment Setup** — gets the stack running locally and verifies it is healthy before any of the above.
-- **Anomaly Recorder** — records product behaviour that looks wrong but can't be fixed here, into a working
-  register handed to engineering (not shipped inside the KUT).
-
-Skills activate automatically when your request matches them; you can also drive the flow with the commands.
-
----
+- Start and verify a local Nabd stack: PostgreSQL, CAP `:4004`, Core `:3002`, Pay `:3003`.
+- Reconcile the kit against a current read-only application clone.
+- Configure and validate Core/Pay business flows with role, release, data, effective-date and lifecycle awareness.
+- Design and test data-driven bank-file templates for delimited, fixed-width, XLSX and XML formats.
+- Capture repeatable, real, de-duplicated screenshots with Playwright.
+- Build and visually QA English KUT/UAT deliverables in Word + Slides.
+- Record product anomalies as separate evidenced engineering handovers.
 
 ## Install
 
-This repo is both a **plugin** and a one-plugin **marketplace**, so you can install it straight from GitHub:
-
-```
+```text
 /plugin marketplace add EslamMahmoud001/Nabd-Core-Pay-Kit
 /plugin install nabd-pay-kit@nabd-kit
 ```
 
-See **[INSTALL.md](INSTALL.md)** for a manual install and for updating.
+See [INSTALL.md](INSTALL.md).
 
----
+## Commands
 
-## Quick start
-
+```text
+/nabd-setup [clone path]
+/nabd-capture <process>
+/nabd-build <process>
+/nabd-kut <process>
+/nabd-anomaly <observation>
 ```
-/nabd-setup                     # bring Nabd up locally and verify it's healthy
-/nabd-kut BP-10                 # capture + build the G/L Posting KUT (Word + Slides), end to end
+
+Natural-language requests activate the same skills.
+
+## Repository map
+
+```text
+.claude-plugin/     plugin and marketplace manifests
+skills/             Trainer, Environment, Consultant, Documents, Anomaly
+commands/           slash-command entry points
+knowledge-base/     product, methodology, playbook, runtime, orchestration
+reference/          process/features/data/prerequisites/bank-template contracts
+templates/          capture, coverage-audit and anomaly templates
+build-pipeline/     reusable Word + Slides builders and brand assets
+qa/                 source baseline, validators and test plan
 ```
 
-Or step by step: `/nabd-capture Reports` then `/nabd-build Reports`.
+## First use
 
-Before your first run, skim **reference/PREREQUISITES.md** (what you need installed) and
-**knowledge-base/KB-05** (how to run the stack). The list of business processes and what each module must cover
-is in **reference/BUSINESS_PROCESSES.md**.
+1. Read `reference/PREREQUISITES.md` and restore the app clone's approved gitignored environment configuration without exposing it.
+2. Run `/nabd-setup <clone path>` and record the actual profile/database, identity/roles, module/release state and tenant snapshot.
+3. For a KUT, run `/nabd-kut <module>` or use capture/build separately.
+4. For bank formats, follow `reference/BANK_TEMPLATES.md`: pass local structural/render validation for every bank before configuring deployed QA.
 
----
+## Non-negotiable rules
 
-## The business processes
+- Core + Pay only; the application clone is read-only.
+- Product facts come from the active clone and runtime, not historical tenant values.
+- Seed inputs and let Nabd calculate outputs.
+- Confirm and record consequential actions.
+- Use real, safe screenshots; never expose credentials, bank/identity values or live compensation.
+- KUT output is Word + Slides only. Anomaly registers stay separate.
 
-16 numbered KUT modules across four stages — Setup & Foundation, Regular Payroll Lifecycle, Payments & Outputs,
-and Specialized Processes — mapped to Nabd's 18 lifecycle areas. Full map + the required section set for each
-module: **[reference/BUSINESS_PROCESSES.md](reference/BUSINESS_PROCESSES.md)**. What Nabd actually includes and
-where each surface lives: **[reference/FEATURE_INVENTORY.md](reference/FEATURE_INVENTORY.md)**.
-
----
-
-## House rules (the kit enforces these)
-
-- The Nabd app repo is **clone-only** — fix things in **configuration through the UI**, never by editing app code.
-- **Screenshots are always real** (local Playwright); never mock-ups.
-- **Never invent** amounts, rules, columns, or steps — seed the *input* a missing system would provide and let
-  Nabd compute the result (see **reference/SEEDED_DATA.md**).
-- **Word + Slides only** — PDFs are intentionally not generated.
-- KUT content: **English only**, **no Prerequisites section**, **no edge/testing content**, every step
-  **PERFORMED-BY** tagged.
-- The **Product Anomalies Register** is a handover to engineering — recorded while working, **never shipped**
-  inside the KUT.
-
----
-
-_Author: Eslam Mahmoud · Raptors Technology. Not affiliated with SAP. Nabd application code is not included in
-this kit._
+Version 2.1.0 (the 1.1.0 content under the `nabd-pay-*` names) is baselined to the application commit recorded in `qa/SOURCE_BASELINE.md`.

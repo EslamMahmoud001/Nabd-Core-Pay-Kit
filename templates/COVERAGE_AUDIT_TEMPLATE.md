@@ -1,46 +1,54 @@
-# KUT Coverage Audit / Project Log — TEMPLATE
+# Nabd Core + Pay coverage audit
 
-> Copy to your working area (e.g. `KUT_COVERAGE_AUDIT.md`). This is the **living status** of your engagement:
-> which business processes are documented, and a dated log of every environment change and consequential action.
-> The Trainer/Documents skills keep this honest — update it whenever a doc is delivered or the environment changes.
+## Baseline and environment
 
-## Coverage — the 16 modules
+| Field | Value/evidence |
+|---|---|
+| Kit version/commit | |
+| Application path/commit/branch/worktree | |
+| Date/operator | |
+| Environment/profile/database identifier | |
+| Backend/Core/Pay URLs | |
+| Persona/roles | |
+| Module flags / target feature release | |
+| Relevant Core sync/job state | |
+| Relevant Pay calendar/cycle/run/config state | |
 
-| # | Business process | Module | Captured | Doc built | Delivered | Notes |
-|---|---|---|:--:|:--:|:--:|---|
-| 01 | Core Integration & Configuration | BP-01 | ☐ | ☐ | ☐ | |
-| 02 | Employee Master Data Foundation | BP-02 | ☐ | ☐ | ☐ | |
-| 03 | Pay Calendars & Cycles | FD-CAL-01 | ☐ | ☐ | ☐ | |
-| 04 | Payroll Configuration Guide | Config Guide | ☐ | ☐ | ☐ | |
-| 05 | Payroll Readiness & Opening a Cycle | BP-03 | ☐ | ☐ | ☐ | |
-| 06 | Run Payroll — Dry Run | FD-RUN-01 | ☐ | ☐ | ☐ | |
-| 07 | Finalize & Close a Payroll Period | FD-RUN-02 | ☐ | ☐ | ☐ | |
-| 08 | Payslips — Template & Bulk Generation | BP-PAYSLIP | ☐ | ☐ | ☐ | |
-| 09 | Bank File Generation | BP-09 | ☐ | ☐ | ☐ | |
-| 10 | G/L Posting | BP-10 | ☐ | ☐ | ☐ | |
-| 11 | Payroll Reports | BP-REPORT | ☐ | ☐ | ☐ | |
-| 12 | Payroll Analytics | BP-ANALYTICS | ☐ | ☐ | ☐ | |
-| 13 | Off-Cycle Payroll — One-Time | BP-13 | ☐ | ☐ | ☐ | |
-| 14 | Retroactive Payroll | BP-RETRO | ☐ | ☐ | ☐ | |
-| 15 | Loans & Advances | BP-LOAN | ☐ | ☐ | ☐ | |
-| 16 | End-of-Service & Leave Provisioning | BP-18 | ☐ | ☐ | ☐ | |
+Do not record secrets, tokens, full bank/identity data, or live compensation.
 
-Coverage values per module: **Captured** (clean, de-duplicated screenshot set exists) · **Doc built** (Word +
-Slides built and QA-passed) · **Delivered** (in the final material folder).
+## Process coverage
 
-## Environment state (keep current)
+| Module | Process | Brief verified | Local flow | Capture | Word | Slides | Visual QA | Delivered | Notes/evidence |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| BP-01 | Core connection and sync | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-02 | Employee/foundation data | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| FD-CAL-01 | Calendars and cycles | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| CFG | Payroll configuration | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-03 | Readiness/opening | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| FD-RUN-01 | Dry run | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| FD-RUN-02 | Actual/approval/post/close | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-PAYSLIP | Payslips | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-09 | Bank files | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-10 | G/L posting | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-REPORT | Reports | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-ANALYTICS | Analytics | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-13 | Off-cycle | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-RETRO | Retro | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-LOAN | Loans/advances | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| BP-18 | EoS/leave | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 
-- Database `NABD_ALT` up: ☐ · Backend `:4004`: ☐ · Core `:3002`: ☐ · Pay `:3003`: ☐
-- Roster is the controlled 17: ☐ (re-purge if a sync repopulated it)
-- Seeds applied (see reference/SEEDED_DATA.md): GL chart ☐ · S/4 post simulated ☐ · loan advance ☐ ·
-  retro triggers ☐ · off-cycle pay item ☐ · preflight toggles ☐
+## Bank-template gate
 
-## Consequential-action log (append-only)
+| Bank/source | Source hash/type inspected | Mapping resolved | Local validation/render | Local eligible generation | QA configured | QA verified | Activated | Rollback key/evidence |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 
-Record every actual run / approve / post / close / hard-delete / regenerate, with date, who, and why.
+## Consequential actions (append-only)
 
-- `YYYY-MM-DD` — <action> — <cycle/entity> — <reason / result>
+| Timestamp | Environment | Persona | Action | Entity/ID | Before → after | Reason/result | Rollback |
+|---|---|---|---|---|---|---|---|
 
-## Change log (append every session)
+## Change and validation log (append-only)
 
-- `YYYY-MM-DD` — <what changed in the app/config/data; what was delivered; what to re-verify next time>
+| Date | Change/observation | Evidence/tests | Revalidation needed | Owner |
+|---|---|---|---|---|

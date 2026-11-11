@@ -1,65 +1,24 @@
 ---
 name: nabd-pay-environment-setup
-description: >
-  Bring the Nabd stack up on a local machine and verify it is healthy before any configuration, payroll run,
-  or screenshot capture. Use to start/repair the environment (Docker Postgres NABD_ALT → backend :4004 →
-  Core :3002 / Pay :3003), confirm the controlled 17-employee roster, and diagnose "port/connection" issues.
-  Triggers: "set up Nabd locally", "bring the stack up", "is Nabd running", "why can't I reach the app",
-  "start the backend/UIs", "prepare the environment to capture <process>".
+description: Start, verify, diagnose, or report a local Nabd Core + Pay environment: PostgreSQL, CAP backend, Core UI, Pay UI, module/release state, persona roles, and required tenant data. Use for setup, stack health, connection/port/database problems, or preparing local testing/capture. Do not configure payroll or edit the application clone.
 ---
 
-# Nabd — Environment Setup
+# Nabd Environment Setup
 
-You get the Nabd stack running locally and **healthy**, so the Consultant can configure it and the capture
-scripts can reach it. You do not configure payroll or build documents — you make the platform reachable and
-the data sane, then hand off.
+Read `reference/PREREQUISITES.md` and `knowledge-base/KB-05_Environment_Runtime_and_Data.md` first.
 
-## Check the prerequisites FIRST (and ask the user when you can't self-serve)
-Before starting anything, confirm the prerequisites in `reference/PREREQUISITES.md` are in place, and **give the
-user a heads-up for anything you cannot reliably do yourself**:
-- **Docker must be running.** Run `docker info` — if it fails, **ask the user to start Docker Desktop** (a
-  headless agent usually cannot launch the Docker Desktop GUI/engine reliably) and wait for it to be ready
-  before continuing. Don't burn time trying to boot it yourself.
-- The **app repo** is cloned and its gitignored `default-env.json` is restored (SF/S4 destinations).
-- `npm install` has been run in the app repo and in the kit's `build-pipeline/`.
-- Node ≥ 18 and Playwright/Chromium are available.
-State clearly which prerequisites are satisfied and which the user must provide, then proceed once they are.
+## Procedure
 
-## The stack (bring up in this order)
-1. **Docker Postgres** — the `NABD_ALT` database on port **55432** (start the container once Docker is running).
-2. **Backend** (SAP CAP) on **:4004** — point CAP at `NABD_ALT` **without editing repo files** (via the
-   profile/env described in KB-05 §1.2). The backend serves `/api/core` and `/api/payroll-*`.
-3. **Front-ends** — Nabd **Core** (`app-core`) on **:3002** and Nabd **Pay** (`app-pay`) on **:3003**
-   (`npm run dev` in each). Login is `ahmed:ahmed`; the capture scripts also set a `dev_user=ahmed` cookie.
+1. Record clone path/commit/worktree. Inspect `readme.md`, `.cdsrc.json`, `docker-compose.yml`, package scripts, and only the presence of `default-env.json`.
+2. Verify Node/npm, dependencies, Docker/PostgreSQL, and browser prerequisites. If Docker Desktop must be started interactively, ask the user.
+3. Determine the resolved CAP profile/database without exposing secrets. Do not assume the compose declaration equals the active target.
+4. Start in order: PostgreSQL, backend `:4004`, Core `:3002`, Pay `:3003`. Track only processes you start.
+5. Prove database connectivity, backend HTTP, both UIs, authenticated bootstrap, Pay module enablement, persona roles and target feature release.
+6. Snapshot task-relevant Core sync/job state and Pay calendar/cycle/config/output state. Employee counts are observations, not fixed gates.
+7. Report commands/evidence, process ownership, limitations, and clean stop instructions in the coverage audit.
 
-Exact commands, the `default-env.json`/SuccessFactors destination note, and the DB connection details live in
-**KB-05 §1** — read it and use those commands; don't guess ports or profiles.
+## Safety
 
-## Verify healthy (don't trust a single probe)
-- Backend: `curl -u ahmed:ahmed http://localhost:4004/` → 200.
-- UIs: prefer `http://localhost:3003/` (and `:3002`). **Gotcha:** the Vite dev servers bind to IPv6 `::1`, so
-  `localhost` works but `127.0.0.1` may return nothing — don't conclude "down" from a `127.0.0.1` probe. On
-  Windows, `Get-NetTCPConnection -LocalPort 3003,3002` shows the listeners.
-- If `npm run dev` says **"Port 3003 is already in use"**, the UI is **already running** — that's healthy, not
-  an error.
+Never display secret file contents or alter the clone. Do not delete containers, volumes, databases or tenant data as a repair. Mock local credentials never apply to deployed QA.
 
-## Data sanity — the controlled 17-employee roster
-Payroll runs are validated against a controlled **17-person** cohort. Before payroll testing, confirm the count
-(`select count(*) from nabd_core_persons` → 17). If a Core sync re-replicated employees, **re-purge to the 17**
-(KB-05 §3.5) — otherwise runs become non-deterministic. Know the seeds that make screens non-empty
-(GL chart, S/4 post simulation, loan advance, retro triggers) — see `reference/SEEDED_DATA.md`.
-
-## Common repairs
-- **Backend won't point at NABD_ALT** — check the profile/env from KB-05 §1.2; a fresh clone lost `default-env.json`.
-- **SF connection dead** — restore the gitignored `default-env.json` (carries the SF/S4 destinations), restart backend.
-- **Empty screens** (Loans / Retro / Analytics) — usually a data or pay-group-scope issue, not a bug. Analytics
-  scopes to the globally-selected pay group; select the pay group whose run you want. Loans/Retro need seeded
-  inputs (SEEDED_DATA.md).
-- **Time-account / leave data missing after a purge** — re-sync it (KB-05 §3.6).
-
-## Definition of done
-Postgres up (17 persons), backend `:4004` returns 200, both UIs reachable on `localhost`, and any seeds the
-target process needs are present. Record the state in the project log (COVERAGE_AUDIT). Then hand off to the
-Consultant (to configure/capture) or Environment issues to the Trainer (to update the KB).
-
-> Style: terminal-precise. State exactly what you started, what you verified, and the one command that proves it.
+Done means every required layer is proven healthy for the target task, or the exact failing layer and evidence are reported.
