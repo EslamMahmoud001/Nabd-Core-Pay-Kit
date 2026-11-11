@@ -1,5 +1,5 @@
 ---
-name: nabd-anomaly-recorder
+name: nabd-pay-anomaly-recorder
 description: >
   Record a product anomaly observed while operating Nabd — behaviour that looks wrong but that cannot be fixed
   here (the app repo is clone-only). Appends a well-formed, evidenced entry to the working Product Anomalies

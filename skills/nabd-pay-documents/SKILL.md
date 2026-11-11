@@ -1,5 +1,5 @@
 ---
-name: nabd-documents-generator
+name: nabd-pay-documents
 description: >
   Produces Nabd KUT (Key User Training) and UAT documents in Word + Slides from real,
   captured screenshots, using the branded build pipeline and a strict QA/audit checklist. Use to

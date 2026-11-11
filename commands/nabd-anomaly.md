@@ -3,7 +3,7 @@ description: Record a product anomaly observed while operating Nabd into the wor
 argument-hint: <what you observed>
 ---
 
-Use the **nabd-anomaly-recorder** skill to record this observation: **$ARGUMENTS**
+Use the **nabd-pay-anomaly-recorder** skill to record this observation: **$ARGUMENTS**
 
 - If `findings/PRODUCT_ANOMALIES_REGISTER.md` doesn't exist yet, create it from
   `templates/ANOMALY_REGISTER_TEMPLATE.md`.

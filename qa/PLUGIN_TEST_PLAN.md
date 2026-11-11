@@ -1,7 +1,7 @@
 # Nabd Core + Pay Kit — Plugin Test Plan
 
 **Version:** 1.0 · **Status:** Ready to execute · **Owner:** QA (orchestrator) · **Subject under test:**
-`nabd-core-pay-kit` v1.0.0
+`nabd-pay-kit` v1.0.0
 
 ---
 
@@ -57,7 +57,7 @@ module set available for the ground-truth diff (the cold agent does not).
 ## 4. Roles
 
 - **Cold agent (SUT operator):** a fresh general-purpose Claude Code agent, prompted with only the task + "the
-  `nabd-core-pay-kit` plugin is installed; use it." No other context.
+  `nabd-pay-kit` plugin is installed; use it." No other context.
 - **Observer / QA (orchestrator):** sets up isolation, watches the full transcript, scores the rubric, logs
   defects, holds the ground truth. Does **not** coach the cold agent mid-run (coaching = a hidden knowledge gap).
 - **Environment:** the local Nabd stack + training tenant.
@@ -82,7 +82,7 @@ module set available for the ground-truth diff (the cold agent does not).
 
 ### Tier 0 — Static validation (automated, no agent)
 Cheap, deterministic gate the observer runs first.
-- `plugin.json` + `marketplace.json` are valid JSON and name-consistent (`nabd-core-pay-kit`, marketplace `nabd-kit`).
+- `plugin.json` + `marketplace.json` are valid JSON and name-consistent (`nabd-pay-kit`, marketplace `nabd-kit`).
 - Every `skills/*/SKILL.md` has valid frontmatter (`name`, `description`); names are unique.
 - Every `commands/*.md` parses; argument-hints present where used.
 - **Internal-reference integrity:** every path a skill/command/README points at (`knowledge-base/…`,
@@ -96,15 +96,15 @@ Cheap, deterministic gate the observer runs first.
 ### Tier 1 — Install & discovery (agent, ~15 min)
 - Install per INSTALL.md into a fresh workspace; confirm `/nabd-*` commands appear in `/help`.
 - Give three natural-language prompts (not commands) and confirm the **right skill activates** unprompted:
-  - "get Nabd running on my machine" → `nabd-environment-setup`
-  - "capture the Reports screen for training" → `nabd-the-consultant`
-  - "this chart looks wrong, note it for the devs" → `nabd-anomaly-recorder`
+  - "get Nabd running on my machine" → `nabd-pay-environment-setup`
+  - "capture the Reports screen for training" → `nabd-pay-consultant`
+  - "this chart looks wrong, note it for the devs" → `nabd-pay-anomaly-recorder`
 
 **Exit:** clean install; commands registered; ≥ 3/3 correct skill activations.
 
 ### Tier 2 — Smoke: one read-only module end-to-end (agent, ~45 min)
 Fastest full-loop proof. Pilot module: **Employee Master Data (BP-02)** — read-only, no configuration, low risk.
-- Cold agent brings the stack up (`nabd-environment-setup`), captures the Data Browser set with a script derived
+- Cold agent brings the stack up (`nabd-pay-environment-setup`), captures the Data Browser set with a script derived
   from `capture_TEMPLATE.mjs`, and builds Word + Slides via the pipeline.
 
 **Exit:** stack verified up; a de-duplicated screenshot set; both formats build and pass the KB-02 §6 checklist.
@@ -129,7 +129,7 @@ Component Studio, run the off-cycle wizard, see results (tests the "configure a 
 directly); or **Loans (BP-LOAN)** — tests the "seed the input, let the engine produce the result" principle.
 
 ### The cold-agent brief (verbatim prompt the observer gives)
-> The `nabd-core-pay-kit` Claude Code plugin is installed. The Nabd application is cloned at `<path>` and is
+> The `nabd-pay-kit` Claude Code plugin is installed. The Nabd application is cloned at `<path>` and is
 > **clone-only** (never push/pull/edit its code). Using only the plugin, produce a **Key User Training** package
 > (Word + Slides) for the **"Run Payroll — Dry Run"** business process: bring the environment up, make the
 > process work, observe the real results, capture real screenshots, and build the deliverable following the

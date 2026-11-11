@@ -2,7 +2,7 @@
 description: Bring the Nabd stack up locally and verify it is healthy (Postgres → backend → Core/Pay UIs).
 ---
 
-Use the **nabd-environment-setup** skill to bring the Nabd stack up and verify it is healthy.
+Use the **nabd-pay-environment-setup** skill to bring the Nabd stack up and verify it is healthy.
 
 Steps:
 1. Read the kit's `knowledge-base/KB-05_Environment_Runtime_and_Data.md` §1 for the exact commands.

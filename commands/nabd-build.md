@@ -3,7 +3,7 @@ description: Build the KUT Word + Slides for a business process from its capture
 argument-hint: <business-process, e.g. BP-10 or "Reports">
 ---
 
-Use the **nabd-documents-generator** skill to build the KUT deliverable for: **$ARGUMENTS**
+Use the **nabd-pay-documents** skill to build the KUT deliverable for: **$ARGUMENTS**
 
 1. Read the kit's `knowledge-base/KB-02_KUT_UAT_Methodology.md` (section set, content rules, QA checklist) and
    `reference/BUSINESS_PROCESSES.md` (what this module must contain).

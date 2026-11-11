@@ -10,7 +10,7 @@ Produce the complete KUT deliverable for: **$ARGUMENTS**, end to end, using the 
 2. **Environment** — ensure the stack is up and healthy (`/nabd-setup`), with the seeds this process needs
    (`reference/SEEDED_DATA.md`).
 3. **Consultant** — configure the flow and capture a clean, de-duplicated screenshot set to `Screenshots/<ID>/`
-   (see `/nabd-capture`). Note the exact figures. Log any anomaly (nabd-anomaly-recorder) and any consequential
+   (see `/nabd-capture`). Note the exact figures. Log any anomaly (nabd-pay-anomaly-recorder) and any consequential
    action (project log).
 4. **Documents Generator** — build **Word + Slides** from the shots via `build-pipeline/` and run the QA
    checklist (see `/nabd-build`). No PDF.

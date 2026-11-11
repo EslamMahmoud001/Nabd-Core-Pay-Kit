@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tier 0 — static validation of the nabd-core-pay-kit plugin. Deterministic, no agent, non-destructive.
+# Tier 0 — static validation of the nabd-pay-kit plugin. Deterministic, no agent, non-destructive.
 # Run from the plugin root:  bash qa/tier0_static_check.sh
 set -u
 cd "$(dirname "$0")/.." || exit 2
@@ -13,7 +13,7 @@ python -c "import json;json.load(open('.claude-plugin/marketplace.json'))" 2>/de
 pn=$(python -c "import json;print(json.load(open('.claude-plugin/plugin.json'))['name'])" 2>/dev/null)
 mn=$(python -c "import json;print(json.load(open('.claude-plugin/marketplace.json'))['name'])" 2>/dev/null)
 mp=$(python -c "import json;print(json.load(open('.claude-plugin/marketplace.json'))['plugins'][0]['name'])" 2>/dev/null)
-[ "$pn" = "nabd-core-pay-kit" ] && ok "plugin name = $pn" || no "plugin name unexpected: $pn"
+[ "$pn" = "nabd-pay-kit" ] && ok "plugin name = $pn" || no "plugin name unexpected: $pn"
 [ "$mp" = "$pn" ] && ok "marketplace plugin name matches" || no "marketplace plugin name mismatch: $mp vs $pn"
 [ -n "$mn" ] && ok "marketplace name = $mn" || no "marketplace name missing"
 

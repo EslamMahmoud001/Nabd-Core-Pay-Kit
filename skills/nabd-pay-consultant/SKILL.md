@@ -1,5 +1,5 @@
 ---
-name: nabd-the-consultant
+name: nabd-pay-consultant
 description: >
   Turns the agent into a masterclass Nabd payroll consultant who navigates and configures the app
   like a pro and captures clean evidence. Use to operate Nabd (Core :3002 / Pay :3003): activate
